@@ -1,0 +1,26 @@
+@charset "UTF-8";
+/**
+  _theme.css
+  PureMVC JS Demo - React EmployeeAdmin
+
+  Copyright(c) 2024 Saad Shams <saad.shams@puremvc.org>
+  Your reuse is governed by the BSD 3-Clause License
+*/
+
+:root {
+    --text-color: #000000;
+    --background-color: #ffffff;
+    --primary-color: #0a58ca;
+    --secondary-color: #0078e7;
+    --tertiary-color: #129fea;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-color: #e0e0e0;
+        --background-color: #121212;
+        --primary-color: #4b4b4b;
+        --secondary-color: #3c4043;
+        --tertiary-color: #333333;
+    }
+}

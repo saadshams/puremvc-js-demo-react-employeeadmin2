@@ -1,0 +1,126 @@
+@charset "UTF-8";
+/**
+  list.module.css
+  PureMVC JS Demo - React EmployeeAdmin
+
+  Copyright(c) 2024 Saad Shams <saad.shams@puremvc.org>
+  Your reuse is governed by the BSD 3-Clause License
+*/
+
+.list {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+    padding: 0 10px;
+    border-radius: 10px;
+    border: solid var(--text-color) 1px;
+}
+
+.list main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.list main ul { /* table */
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.list main ul li { /* row */
+    display: flex;
+    width: 100%;
+    padding: 0;
+    border-bottom: solid var(--text-color) 1px;
+    transition: background-color 0.3s ease;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.list main ul li:first-child { /* row: first child (sticky header) */
+    display: flex;
+    flex: 1;
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    font-weight: 700;
+    color: var(--background-color);
+    background-color: var(--primary-color); /* ignores row hover */
+}
+.list ul li:hover { /* row: hover */
+    background-color: var(--background-color);
+}
+.list ul li input:checked + label { /* row: selected */
+    color: var(--background-color);
+    background-color: var(--secondary-color);
+}
+
+.list main ul li label { /* column group */
+    display: flex;
+    width: 100%;
+    user-select: none;
+}
+.list main ul li span { /* column */
+    flex: 1;
+    min-width: 0; /* Allow flex items to shrink properly */
+    max-width: 100%; /* Prevent flex items from growing beyond container */
+    padding: 10px;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    user-select: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.list main ul li input { /* column: hide radio button */
+    display: none;
+}
+
+.list footer {
+    display: flex;
+    justify-content: flex-end;
+    column-gap: 8px;
+
+    width: 100%;
+    padding: 10px;
+    margin-top: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+    .list main ul li:first-child { /* row: first child (sticky header) */
+        color: var(--background-color);
+        background-color: var(--text-color);
+    }
+    .list ul li:hover { /* row: hover */
+        background-color: var(--tertiary-color);
+    }
+    .list ul li input:checked + label { /* row: selected */
+        color: var(--text-color);
+        background-color: var(--primary-color);
+    }
+}
+
+@media screen and (max-width: 767px) {  /* Small screens (phones) */
+    .list main ul li label span:nth-child(n+2),
+    .list main ul li:first-child span:nth-child(n+2) { /* Hide all columns starting from the 2nd column */
+        display: none;
+    }
+    .list main ul li {
+        position: relative;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1023px) { /* Medium screens (tablets) */
+    .list main ul li span:first-child {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 1024px) { /* large screens (desktops) */
+    .list main ul li span:first-child {
+        display: none;
+    }
+}

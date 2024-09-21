@@ -1,0 +1,54 @@
+@charset "UTF-8";
+/**
+  form.module.css
+  PureMVC JS Demo - React EmployeeAdmin
+
+  Copyright(c) 2024 Saad Shams <saad.shams@puremvc.org>
+  Your reuse is governed by the BSD 3-Clause License
+*/
+
+.form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0 10px;
+    border: solid 1px var(--text-color);
+    border-radius: 10px;
+}
+
+.form main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+}
+.form main ul li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    column-gap: 8px;
+    padding: 5px 0;
+}
+.form main ul li label {
+    flex: 1 0 90px;
+    max-width: 200px;
+    user-select: none;
+}
+.form main ul li input {
+    flex: 1 0 230px;
+    width: 100%;
+}
+.form main ul li select {
+    flex: 1 0 230px;
+    width: 100%;
+}
+
+.form footer {
+    display: flex;
+    justify-content: flex-end;
+    column-gap: 8px;
+    width: 100%;
+    padding: 10px;
+    margin-top: auto; /* sticky to bottom */
+}
