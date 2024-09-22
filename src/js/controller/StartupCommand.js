@@ -11,12 +11,28 @@ import {ApplicationConstants} from "../ApplicationConstants";
 import {ApplicationFacade} from "../ApplicationFacade";
 import {UserProxy} from "../model/UserProxy";
 import {RoleProxy} from "../model/RoleProxy";
+import {UserVO} from "../model/valueObject/UserVO.js";
+import {DeptEnum} from "../model/enum/DeptEnum.js";
+import {RoleVO} from "../model/valueObject/RoleVO.js";
+import {RoleEnum} from "../model/enum/RoleEnum.js";
 
 export class StartupCommand extends SimpleCommand {
 
     execute(notification) {
-        this.facade.registerProxy(new UserProxy());
-        this.facade.registerProxy(new RoleProxy());
+        let users = [
+            new UserVO("lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", DeptEnum.ACCT),
+            new UserVO("cstooge","Curly", "Stooge", "curly@stooges.com", "xyz987", DeptEnum.SALES),
+            new UserVO("mstooge","Moe", "Stooge", "moe@stooges.com", "abc123", DeptEnum.PLANT)
+        ];
+
+        let roles = [
+            new RoleVO( "lstooge", [RoleEnum.PAYROLL, RoleEnum.EMP_BENEFITS]),
+            new RoleVO( "cstooge", [RoleEnum.ACCT_PAY, RoleEnum.ACCT_RCV, RoleEnum.GEN_LEDGER]),
+            new RoleVO( "mstooge", [RoleEnum.INVENTORY, RoleEnum.PRODUCTION, RoleEnum.SALES, RoleEnum.SHIPPING])
+        ];
+
+        this.facade.registerProxy(new UserProxy(users));
+        this.facade.registerProxy(new RoleProxy(roles));
 
         [
             ApplicationConstants.USER_LIST_MOUNTED, ApplicationConstants.USER_LIST_UNMOUNTED,

@@ -7,87 +7,53 @@
 //
 
 import {Proxy} from "@puremvc/puremvc-js-multicore-framework";
-import {ApplicationConstants} from "../ApplicationConstants";
-import {User} from "./valueObject/User";
-import {Department} from "./valueObject/Department";
+import {DeptEnum} from "./enum/DeptEnum.js";
 
 export class UserProxy extends Proxy {
 
     static get NAME() { return "UserProxy" }
-
-    constructor() {
-        super(UserProxy.NAME, null);
+a
+    constructor(data) {
+        super(UserProxy.NAME, data);
     }
 
     async findAllUsers(){
-        const response = await fetch(`${ApplicationConstants.API_URL}/users`, {method: "GET"});
-        if (response.status === 200) {
-            const json = await response.json();
-            return json.map(user => User.fromJson(user));
-        } else {
-            const error = await response.json();
-            throw new Error(error.message);
-        }
-    }
-
-    async findUserById(id) {
-        const response = await fetch(`${ApplicationConstants.API_URL}/users/${id}`, {method: "GET"});
-        if (response.status === 200) {
-            const json = await response.json();
-            return User.fromJson(json);
-        } else {
-            const error = await response.json();
-            throw new Error(error.message);
-        }
-    }
-
-    async add(user) {
-        const response = await fetch(`${ApplicationConstants.API_URL}/users`, { method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify(user)
+        return new Promise(resolve => {
+            resolve(this.users);
         });
-
-        if (response.status === 201) {
-            const json = await response.json();
-            return User.fromJson(json);
-        } else {
-            const error = await response.json();
-            throw new Error(error.message);
-        }
     }
 
-    async update(user) {
-        const response = await fetch(`${ApplicationConstants.API_URL}/users/${user.id}`, { method: "PUT",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify(user)
+    findUserByUsername(username) {
+        return new Promise(resolve => {
+            resolve(this.users.find(u => u.username === username));
         });
-
-        if (response.status === 200) {
-            const json = await response.json();
-            return User.fromJson(json);
-        } else {
-            const error = await response.json();
-            throw new Error(error.message);
-        }
     }
 
-    async deleteUserById(id) {
-        const response = await fetch(`${ApplicationConstants.API_URL}/users/${id}`, {method: "DELETE"});
-        if (response.status !== 204) {
-            const error = await response.json();
-            throw new Error(error.message);
-        }
+    add(user) {
+        this.users.push(user);
+    }
+
+    update(user) {
+        this.users = this.users.map(u => u.username === user.username ? user : u);
+    }
+
+    deleteUserByUsername(username) {
+        this.users = this.users.filter(u => u.username !== username);
     }
 
     async findAllDepartments() {
-        const response = await fetch(`${ApplicationConstants.API_URL}/departments`, {method: "GET"});
-        if (response.status === 200) {
-            const json = await response.json();
-            return json.map(department => Department.fromJson(department));
-        } else {
-            const error = await response.json();
-            throw new Error(error.message);
-        }
+        return new Promise(resolve => {
+            resolve(DeptEnum.comboList);
+        });
+    }
+
+    /** @returns {User[]} */
+    get users() {
+        return this.data;
+    }
+
+    set users(value) {
+        this.data = value;
     }
 
 }

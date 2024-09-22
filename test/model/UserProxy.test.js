@@ -6,115 +6,66 @@
 //  Your reuse is governed by the BSD 3-Clause License
 //
 
-import { describe, expect, beforeEach, it, vi } from "vitest";
-import {ApplicationConstants} from "../../src/js/ApplicationConstants.js";
+import { describe, expect, beforeEach, it } from "vitest";
 import {UserProxy} from "../../src/js/model/UserProxy.js";
-import {User} from "../../src/js/model/valueObject/User.js";
-import {Department} from "../../src/js/model/valueObject/Department.js";
-
-globalThis.fetch = vi.fn();
-
-vi.mock("../../src/js/model/valueObject/User.js", () => ({
-    User: {
-        fromJson: vi.fn()
-    }
-}));
-
-vi.mock("../../src/js/model/valueObject/Department.js", () => ({
-    Department: {
-        fromJson: vi.fn(),
-        NONE_SELECTED: { id: 0, name: "---None Selected---" }
-    }
-}));
+import {UserVO} from "../../src/js/model/valueObject/UserVO.js";
+import {DeptEnum} from "../../src/js/model/enum/DeptEnum.js";
 
 describe("UserProxy", () => {
     let userProxy;
 
     beforeEach(() => {
-        userProxy = new UserProxy();
-        vi.clearAllMocks();
+        let users = [
+            new UserVO("lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", DeptEnum.ACCT),
+            new UserVO("cstooge","Curly", "Stooge", "curly@stooges.com", "xyz987", DeptEnum.SALES ),
+            new UserVO("mstooge","Moe", "Stooge", "moe@stooges.com", "abc123", DeptEnum.PLANT )
+        ];
+        userProxy = new UserProxy(users);
     });
 
     it("should fetch all users", async () => {
-        const mockUsers = [{ id: 1, first: "Larry", last: "Stooge" }];
-        const response = { json: vi.fn().mockResolvedValue(mockUsers) };
-        fetch.mockResolvedValue({ ...response, status: 200 });
-
-        User.fromJson.mockImplementation(user => user);
         const users = await userProxy.findAllUsers();
-        expect(users).toEqual(mockUsers.map(User.fromJson));
-        expect(fetch).toHaveBeenCalledWith(`${ApplicationConstants.API_URL}/users`, { method: "GET" });
+        expect(users).toHaveLength(3);
     });
 
-    it("findAllUsers Error", async () => {
-        const mockError = { message: "Failed to fetch users" };
-        const response = { json: vi.fn().mockResolvedValue(mockError) };
-        fetch.mockResolvedValue({ ...response, status: 500 });
+    it("should fetch user by username", async () => {
+        let user = await userProxy.findUserByUsername("lstooge");
+        expect(user.username).toEqual("lstooge");
 
-        await expect(userProxy.findAllUsers()).rejects.toThrow("Failed to fetch users");
-    });
+        user = await userProxy.findUserByUsername("cstooge");
+        expect(user.username).toEqual("cstooge");
 
-    it("should fetch user by ID", async () => {
-        const mockUser = { id: 1, first: "Larry", last: "Stooge" };
-        const response = { json: vi.fn().mockResolvedValue(mockUser) };
-        fetch.mockResolvedValue({ ...response, status: 200 });
+        user = await userProxy.findUserByUsername("mstooge");
+        expect(user.username).toEqual("mstooge");
 
-        User.fromJson.mockImplementation(user => user);
-
-        const user = await userProxy.findUserById(1);
-        expect(user).toEqual(User.fromJson(mockUser));
-        expect(fetch).toHaveBeenCalledWith(`${ApplicationConstants.API_URL}/users/1`, { method: "GET" });
+        user = await userProxy.findUserByUsername("sstooge");
+        expect(user).toEqual(undefined);
     });
 
     it("should add a new user", async () => {
-        const newUser = { id: 2, first: "Curly", last: "Stooge" };
-        const response = { json: vi.fn().mockResolvedValue(newUser) };
-        fetch.mockResolvedValue({ ...response, status: 201 });
+        const newUser = new UserVO("sshemp", "Shemp", "Stooge", "shemp@stooges.com", "xyz987", DeptEnum.PLANT);
 
-        User.fromJson.mockImplementation(user => user);
-
-        const user = await userProxy.add(newUser);
-        expect(user).toEqual(User.fromJson(newUser));
-        expect(fetch).toHaveBeenCalledWith(`${ApplicationConstants.API_URL}/users`, {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify(newUser),
-        });
+        await userProxy.add(newUser);
+        const user = await userProxy.findUserByUsername("sshemp");
+        expect(user).toEqual(newUser);
     });
 
     it("should update a user", async () => {
-        const updatedUser = { id: 1, first: "Larry", last: "Stooge" };
-        const response = { json: vi.fn().mockResolvedValue(updatedUser) };
-        fetch.mockResolvedValue({ ...response, status: 200 });
+        const updatedUser = new UserVO("lstooge","Larry1", "Stooge", "larry@stooges.com", "ijk456",DeptEnum.ACCT)
+        await userProxy.update(updatedUser);
 
-        User.fromJson.mockImplementation(user => user);
-
-        const user = await userProxy.update(updatedUser);
-        expect(user).toEqual(User.fromJson(updatedUser));
-        expect(fetch).toHaveBeenCalledWith(`${ApplicationConstants.API_URL}/users/1`, {
-            method: "PUT",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify(updatedUser),
-        });
+        const user = await userProxy.findUserByUsername("lstooge");
+        expect(user).toEqual(updatedUser);
     });
 
-    it("should delete user by ID", async () => {
-        fetch.mockResolvedValue({ status: 204 });
-
-        await userProxy.deleteUserById("1");
-        expect(fetch).toHaveBeenCalledWith(`${ApplicationConstants.API_URL}/users/1`, { method: "DELETE" });
+    it("should delete user by username", async () => {
+        await userProxy.deleteUserByUsername("cstooge");
+        expect(await userProxy.findAllUsers()).toHaveLength(2);
     });
 
     it("should fetch all departments", async () => {
-        const mockDepartments = [{ id: 1, name: "Accounting" }];
-        const response = { json: vi.fn().mockResolvedValue(mockDepartments) };
-        fetch.mockResolvedValue({ ...response, status: 200 });
-
-        Department.fromJson.mockImplementation(department => department);
-
         const departments = await userProxy.findAllDepartments();
-        expect(departments).toEqual(mockDepartments.map(Department.fromJson));
-        expect(fetch).toHaveBeenCalledWith(`${ApplicationConstants.API_URL}/departments`, { method: "GET" });
+        expect(departments).toHaveLength(6);
     });
 
 });

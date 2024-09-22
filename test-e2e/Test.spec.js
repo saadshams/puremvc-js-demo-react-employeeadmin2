@@ -31,8 +31,9 @@ test.describe("End to End Tests", () => {
         expect(await department.innerText()).toBe("Accounting");
 
         const roles = page.locator('#role main ul li');
-        expect(await roles.count()).toBe(1);
-        expect(await roles.nth(0).innerText()).toEqual("Employee Benefits");
+        expect(await roles.count()).toBe(2);
+        expect(await roles.nth(0).innerText()).toEqual("Payroll");
+        expect(await roles.nth(1).innerText()).toEqual("Employee Benefits");
     });
 
     test("test for Curly", async ({page}) => {
@@ -51,9 +52,10 @@ test.describe("End to End Tests", () => {
         expect(await department.innerText()).toBe("Sales");
 
         const roles = page.locator('#role main ul li');
-        expect(await roles.count()).toBe(2);
-        expect(await roles.nth(0).innerText()).toEqual("Accounts Receivable");
-        expect(await roles.nth(1).innerText()).toEqual("General Ledger");
+        expect(await roles.count()).toBe(3);
+        expect(await roles.nth(0).innerText()).toEqual("Accounts Payable");
+        expect(await roles.nth(1).innerText()).toEqual("Accounts Receivable");
+        expect(await roles.nth(2).innerText()).toEqual("General Ledger");
     });
 
     test("test for Moe", async ({page}) => {
@@ -72,29 +74,30 @@ test.describe("End to End Tests", () => {
         expect(await department.innerText()).toBe("Plant");
 
         const roles = page.locator('#role main ul li');
-        expect(await roles.count()).toBe(3);
-        expect(await roles.nth(0).innerText()).toEqual("Production");
-        expect(await roles.nth(1).innerText()).toEqual("Sales");
-        expect(await roles.nth(2).innerText()).toEqual("Shipping");
+        expect(await roles.count()).toBe(4);
+        expect(await roles.nth(0).innerText()).toEqual("Inventory");
+        expect(await roles.nth(1).innerText()).toEqual("Production");
+        expect(await roles.nth(2).innerText()).toEqual("Sales");
+        expect(await roles.nth(3).innerText()).toEqual("Shipping");
     });
 
     test("test insert user", async ({page}) => {
         await page.goto("http://localhost:4173/");
 
         // Fill the form
-        await page.waitForTimeout(2000);
         await page.locator('input[id="first"]').fill('Shemp');
         await page.locator('input[id="last"]').fill('Stooge');
         await page.locator('input[id="email"]').fill('shemp@stooges.com');
         await page.locator('input[id="username"]').fill('sshemp');
         await page.locator('input[id="password"]').fill('xyz987');
         await page.locator('input[id="confirm"]').fill('xyz987');
+
+        await page.locator('select[id="department"]').click();
+        await page.waitForSelector('select[id="department"]');
         await page.locator('select[id="department"]').selectOption({value: '2'});
+
         await page.waitForSelector('#form button.primary:not([disabled])');
         await page.locator('#form footer button.primary').click();
-
-        // Wait for the list to be re-rendered
-        await page.waitForFunction(() => document.querySelectorAll('#list main ul li').length === 5);
 
         // confirm new user fields
         let users = await page.locator('#list main ul li');

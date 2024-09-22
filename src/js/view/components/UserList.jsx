@@ -7,9 +7,9 @@
 //
 
 import styles from "../../../css/list.module.css"
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useReducer, useState} from "react";
 import {ApplicationConstants} from "../../ApplicationConstants";
-import {User} from "../../model/valueObject/User";
+import {UserVO} from "../../model/valueObject/UserVO.js";
 
 export class UserListEvents {
     static NEW   = "events/user/list/new";
@@ -19,34 +19,37 @@ export class UserListEvents {
 
 export const UserList = () => {
 
-    const [users, setUsers] = useState([]); // User/Service Data
+    const [users, setUsers] = useState([]); // UserVO/Service Data
     const [selectedUser, setSelectedUser] = useState(null); // Input/Form Data
     const [error, setError] = useState(null);
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     /**
      * @typedef {Object} UserList
-     * @property {(users: User[]) => void} setUsers
-     * @property {(user: User) => void} addUser
-     * @property {(user: User) => void} updateUser
-     * @property {(user: User) => void} updateRoles
+     * @property {(users: UserVO[]) => void} setUsers
+     * @property {(user: UserVO) => void} addUser
+     * @property {(user: UserVO) => void} updateUser
+     * @property {(user: UserVO) => void} updateRoles
      * @property {() => void} deSelect
+     * @property {() => void} forceUpdate
      * @property {(error: string) => void} setError
      */
     const component = useMemo(() => ({
         setUsers: setUsers,
-        addUser: (user) => {
+        addUser: (user) =>  {
             setUsers(state => [...state, user]);
         },
         updateUser: (user) => {
-            setUsers(state => state.map(u => u.id === user.id ? user : u));
+            setUsers(state => state.map(u => u.username === user.username ? user : u));
             setSelectedUser(null);
         },
         updateRoles: (user) => {
-            setUsers(state => state.map(u => u.id === user.id ? user : u));
+            setUsers(state => state.map(u => u.username === user.username ? user : u));
         },
         deSelect: () => {
             setSelectedUser(null);
         },
+        forceUpdate: forceUpdate,
         setError: setError
     }), [setUsers, setSelectedUser, setError]);
 
@@ -58,7 +61,7 @@ export const UserList = () => {
     }, [component]);
 
     const onNew = () => {
-        dispatchEvent(new CustomEvent(UserListEvents.NEW, {detail: new User()}));
+        dispatchEvent(new CustomEvent(UserListEvents.NEW, {detail: new UserVO()}));
         setSelectedUser(null);
     }
 
@@ -69,7 +72,7 @@ export const UserList = () => {
 
     const onDelete = (user) => {
         dispatchEvent(new CustomEvent(UserListEvents.DELETE, {detail: user}))
-        setUsers(state => state.filter(u => u.id !== user.id));
+        setUsers(state => state.filter(u => u.username !== user.username));
         setSelectedUser(null);
     }
 
@@ -97,12 +100,12 @@ export const UserList = () => {
                                 <span>Department</span>
                             </li>
                             {users.map(user => (
-                                <li key={`user_${user.id}`}>
-                                    <input type="radio" id={`users_radio${user.id}`} name="users" value={user.id}
+                                <li key={`user_${user.username}`}>
+                                    <input type="radio" id={`users_radio${user.username}`} name="users" value={user.username}
                                            onChange={() => onSelect(user)}
-                                           checked={selectedUser !== null && selectedUser.id === user.id}/>
+                                           checked={selectedUser !== null && selectedUser.username === user.username}/>
 
-                                    <label htmlFor={`users_radio${user.id}`}>
+                                    <label htmlFor={`users_radio${user.username}`}>
                                         <span>{user.last}, {user.first}</span>
                                         <span>{user.username}</span>
                                         <span>{user.first}</span>

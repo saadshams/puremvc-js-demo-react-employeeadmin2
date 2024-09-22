@@ -63,7 +63,7 @@ export class UserFormMediator extends Mediator {
                 break;
 
             case ApplicationFacade.USER_SELECTED:
-                this.userProxy.findUserById(notification.body.id)
+                this.userProxy.findUserByUsername(notification.body.username)
                     .then(user => this.component.setUser(user))
                     .catch(error => this.component.setError(error));
                 break;
@@ -74,8 +74,8 @@ export class UserFormMediator extends Mediator {
     }
 
     async onSave(user) {
-        const u = await this.userProxy.add(user);
-        this.facade.sendNotification(ApplicationFacade.USER_SAVED, u);
+        await this.userProxy.add(user);
+        this.facade.sendNotification(ApplicationFacade.USER_SAVED, user);
     }
 
     async onUpdate(user) {

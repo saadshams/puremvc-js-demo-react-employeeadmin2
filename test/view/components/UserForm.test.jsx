@@ -10,8 +10,8 @@ import {fireEvent, render, screen, waitFor} from "@testing-library/react"
 import {describe, expect, it} from "vitest";
 import {act} from "react";
 import {ApplicationConstants} from "../../../src/js/ApplicationConstants.js";
-import {User} from "../../../src/js/model/valueObject/User.js";
-import {Department} from "../../../src/js/model/valueObject/Department.js";
+import {UserVO} from "../../../src/js/model/valueObject/UserVO.js";
+import {DeptEnum} from "../../../src/js/model/enum/DeptEnum.js";
 import {UserFormEvents, UserForm} from "../../../src/js/view/components/UserForm.jsx";
 
 describe("UserForm", () => {
@@ -42,13 +42,14 @@ describe("UserForm", () => {
                 const component = event.detail;
 
                 act(() => {
-                    const departments = [new Department(1, "Accounting"), new Department(2, "Sales")];
+                    const departments = [DeptEnum.NONE_SELECTED, DeptEnum.ACCT, DeptEnum.SALES];
                     component.setDepartments(departments);
                 });
 
                 await waitFor(() => {
                     const options = screen.getAllByRole("option");
-                    expect(options).toHaveLength(3); // including default option NONE_SELECTED
+                    expect(options).toHaveLength(3);
+                    expect(options[0]).toHaveTextContent("---None Selected---");
                     expect(options[1]).toHaveTextContent("Accounting");
                     expect(options[2]).toHaveTextContent("Sales");
                 });
@@ -63,9 +64,9 @@ describe("UserForm", () => {
         await new Promise(resolve => {
             window.addEventListener(ApplicationConstants.USER_FORM_MOUNTED, async event => {
                 const component = event.detail;
-                const departments = [new Department(1, "Accounting"), new Department(2, "Sales")];
-                const larry = new User(1, "lstooge","Larry", "Stooge", "larry@stooges.com",
-                    "ijk456", new Department(1, "Accounting"), []);
+                const departments = [DeptEnum.NONE_SELECTED, DeptEnum.ACCT, DeptEnum.SALES];
+                const larry = new UserVO("lstooge","Larry", "Stooge", "larry@stooges.com",
+                    "ijk456", DeptEnum.ACCT, []);
 
                 act(() => {
                     component.setDepartments(departments);
@@ -81,7 +82,7 @@ describe("UserForm", () => {
                     expect(screen.getByLabelText("Username:").value).toBe(larry.username);
                     expect(screen.getByLabelText("Password:").value).toBe(larry.password);
                     expect(screen.getByLabelText("Confirm:").value).toBe(larry.password);
-                    expect(parseInt(screen.getByRole("combobox").value)).toBe(departments[0].id);
+                    expect(parseInt(screen.getByRole("combobox").value)).toBe(DeptEnum.ACCT.id);
                 });
 
                 resolve();
@@ -97,9 +98,9 @@ describe("UserForm", () => {
                 const component = event.detail;
 
                 act(() => {
-                    const departments = [new Department(1, "Accounting"), new Department(2, "Sales")];
+                    const departments = [DeptEnum.NONE_SELECTED, DeptEnum.ACCT, DeptEnum.SALES];
                     component.setDepartments(departments);
-                    component.setUser(new User());
+                    component.setUser(new UserVO());
                 });
 
                 fireEvent.change(screen.getByLabelText("First Name:"), { target: { value: "Shemp" } });
@@ -111,7 +112,7 @@ describe("UserForm", () => {
 
                 await waitFor(() => {
                     const options = screen.getAllByRole("option");
-                    expect(options).toHaveLength(3); // including default option
+                    expect(options).toHaveLength(3);
                 });
 
                 fireEvent.change(screen.getByLabelText("Department:"), { target: { value: '1' } });
@@ -128,9 +129,9 @@ describe("UserForm", () => {
         await new Promise(resolve => {
             window.addEventListener(ApplicationConstants.USER_FORM_MOUNTED, async event => {
                 const component = event.detail;
-                const departments = [new Department(1, "Accounting"), new Department(2, "Sales")];
-                const larry = new User(1, "lstooge","Larry", "Stooge", "larry@stooges.com",
-                    "ijk456", new Department(1, "Accounting"), []);
+                const departments = [DeptEnum.NONE_SELECTED, DeptEnum.ACCT, DeptEnum.SALES];
+                const larry = new UserVO("lstooge","Larry", "Stooge", "larry@stooges.com",
+                    "ijk456", DeptEnum.ACCT);
 
                 act(() => {
                     component.setDepartments(departments);
@@ -138,7 +139,7 @@ describe("UserForm", () => {
                 });
 
                 await waitFor(async () => {
-                    expect(screen.getAllByRole("option")).toHaveLength(3); // including default option
+                    expect(screen.getAllByRole("option")).toHaveLength(3);
                     fireEvent.change(screen.getByLabelText("Username:"), {target: {value: "lstooge1"}});
                 });
 

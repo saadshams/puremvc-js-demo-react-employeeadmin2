@@ -10,9 +10,9 @@ import {fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {describe, expect, it} from "vitest";
 import {act} from "react";
 import {ApplicationConstants} from "../../../src/js/ApplicationConstants.js";
-import {User} from "../../../src/js/model/valueObject/User.js";
-import {Department} from "../../../src/js/model/valueObject/Department.js";
-import {Role} from "../../../src/js/model/valueObject/Role.js";
+import {UserVO} from "../../../src/js/model/valueObject/UserVO.js";
+import {DeptEnum} from "../../../src/js/model/enum/DeptEnum.js";
+import {RoleEnum} from "../../../src/js/model/enum/RoleEnum.js";
 import {UserRole} from "../../../src/js/view/components/UserRole.jsx";
 
 describe("UserRole", () => {
@@ -43,7 +43,7 @@ describe("UserRole", () => {
                 const component = event.detail;
 
                 act(() => {
-                    component.setRoles([new Role(1, "Administrator"), new Role(2, "Accounts Payable")]);
+                    component.setRoles([new RoleEnum(1, "Administrator"), new RoleEnum(2, "Accounts Payable")]);
                 });
 
                 await waitFor(() => {
@@ -64,7 +64,7 @@ describe("UserRole", () => {
                 const component = event.detail;
 
                 act(() => {
-                    component.setRoles([new Role(1, "Administrator"), new Role(2, "Accounts Payable")]);
+                    component.setRoles([new RoleEnum(1, "Administrator"), new RoleEnum(2, "Accounts Payable")]);
                 });
 
                 await waitFor(() => {
@@ -72,7 +72,8 @@ describe("UserRole", () => {
                     expect(screen.getByText("Accounts Payable")).toBeInTheDocument();
                 });
 
-                const larry = new User(1, "lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", new Department(1, "Accounting"), []);
+                const larry = new UserVO("lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", new DeptEnum(1, "Accounting"));
+                larry.roles = [];
                 act(() => { component.setUser(larry) });
 
                 // change select option and click Add

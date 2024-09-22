@@ -56,7 +56,7 @@ export class UserListMediator extends Mediator {
     handleNotification(notification) {
         switch(notification.name) {
             case ApplicationFacade.USER_SAVED:
-                this.component.addUser(notification.body);
+                this.component.forceUpdate();
                 break;
 
             case ApplicationFacade.USER_UPDATED:

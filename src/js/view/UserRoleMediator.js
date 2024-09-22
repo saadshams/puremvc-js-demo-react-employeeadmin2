@@ -57,9 +57,9 @@ export class UserRoleMediator extends Mediator {
                 break;
 
             case ApplicationFacade.USER_SELECTED:
-                this.roleProxy.findRolesById(notification.body.id)
+                this.roleProxy.findRolesByUsername(notification.body.username)
                     .then(result => {
-                        notification.body.roles = result;
+                        notification.body.roles = result.roles;
                         this.component.setUser(notification.body);
                     })
                     .catch(error => this.component.setError(error));
@@ -75,7 +75,7 @@ export class UserRoleMediator extends Mediator {
     }
 
     async onChange(user) {
-        await this.roleProxy.updateRolesById(user.id, user.roles);
+        await this.roleProxy.updateRolesByUsername(user.username, user.roles);
         this.facade.sendNotification(ApplicationFacade.ROLE_UPDATE, user);
     }
 

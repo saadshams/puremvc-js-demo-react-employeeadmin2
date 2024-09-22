@@ -9,7 +9,7 @@
 import styles from "../../../css/role.module.css"
 import {useEffect, useMemo, useState} from "react";
 import {ApplicationConstants} from "../../ApplicationConstants";
-import {Role} from "../../model/valueObject/Role";
+import {RoleEnum} from "../../model/enum/RoleEnum.js";
 
 export class UserRoleEvents {
 	static UPDATE = "events/user/role/update";
@@ -17,14 +17,14 @@ export class UserRoleEvents {
 
 export const UserRole = () => {
 
-	const [roles, setRoles] = useState(/** @type Role[] */ []); // UI Data
-	const [user, setUser] = useState(/** @type User */ null); // User/Service Data
-	const [role, setRole] = useState(Role.NONE_SELECTED); // Input/Form Data
+	const [roles, setRoles] = useState(/** @type RoleEnum[] */ []); // UI Data
+	const [user, setUser] = useState(/** @type UserVO */ null); // UserVO/Service Data
+	const [role, setRole] = useState(RoleEnum.NONE_SELECTED); // Input/Form Data
 	const [error, setError] = useState(null);
 
 	/**
 	 * @typedef {Object} UserRole
-	 * @property {(roles: Role[]) => void} setRoles
+	 * @property {(roles: RoleEnum[]) => void} setRoles
 	 * @property {(user: User) => void} setUser
 	 * @property {(error: string) => void} setError
 	 * @property {() => void} reset
@@ -32,12 +32,12 @@ export const UserRole = () => {
 	const component = useMemo(() => ({
 		setRoles: setRoles,
 		setUser: (u) => {
-			setRole(Role.NONE_SELECTED);
+			setRole(RoleEnum.NONE_SELECTED);
 			setUser(u);
 		},
 		setError: setError,
 		reset: () => {
-			setRole(Role.NONE_SELECTED);
+			setRole(RoleEnum.NONE_SELECTED);
 			setUser(null);
 		}
 	}), [setUser, setError]);
@@ -91,15 +91,14 @@ export const UserRole = () => {
 					<footer>
 						<label htmlFor="roles"></label>
 						<select id="roles" value={role.id} onChange={onChange} disabled={user === null}>
-							<option value={Role.NONE_SELECTED.id}>{Role.NONE_SELECTED.name}</option>
 							{roles.map(r => (
 								<option key={`role_option${r.id}`} value={r.id}>{r.name}</option>
 							))}
 						</select>
 						<button id="add" className="primary" onClick={() => onAdd()}
-						        disabled={role === Role.NONE_SELECTED}>Add</button>
+						        disabled={role === RoleEnum.NONE_SELECTED}>Add</button>
 						<button id="remove" className="outline-primary" onClick={() => onRemove()}
-						        disabled={role === Role.NONE_SELECTED}>Remove</button>
+						        disabled={role === RoleEnum.NONE_SELECTED}>Remove</button>
 					</footer>
 				</div>
 			)}

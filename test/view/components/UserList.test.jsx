@@ -10,8 +10,8 @@ import {fireEvent, render, screen, waitFor} from "@testing-library/react"
 import {describe, expect, it} from "vitest";
 import {act} from "react";
 import {ApplicationConstants} from "../../../src/js/ApplicationConstants.js";
-import {User} from "../../../src/js/model/valueObject/User.js";
-import {Department} from "../../../src/js/model/valueObject/Department.js";
+import {UserVO} from "../../../src/js/model/valueObject/UserVO.js";
+import {DeptEnum} from "../../../src/js/model/enum/DeptEnum.js";
 import {UserListEvents, UserList} from "../../../src/js/view/components/UserList.jsx";
 
 // Testing setters and events
@@ -51,7 +51,7 @@ describe("UserList", () => {
         await new Promise(resolve => {
             window.addEventListener(ApplicationConstants.USER_LIST_MOUNTED, async event => {
                 let component = event.detail;
-                const larry = new User(1, "lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", new Department(1, "Accounting"), []);
+                const larry = new UserVO("lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", DeptEnum.ACCT, []);
                 component.setUsers([larry]);
                 await waitFor(() => { expect(screen.getByText("lstooge")).toBeInTheDocument(); });
                 resolve();
@@ -64,7 +64,7 @@ describe("UserList", () => {
         await new Promise(resolve => {
             window.addEventListener(ApplicationConstants.USER_LIST_MOUNTED, async (event) => {
                 const component = event.detail;
-                const larry = new User(1, "lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", new Department(1, "Accounting"), []);
+                const larry = new UserVO("lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", DeptEnum.ACCT, []);
                 component.addUser(larry);
                 await waitFor(() => { expect(screen.getByText("lstooge")).toBeInTheDocument(); });
                 resolve();
@@ -77,7 +77,7 @@ describe("UserList", () => {
         await new Promise(resolve => {
             window.addEventListener(ApplicationConstants.USER_LIST_MOUNTED, async (event) => {
                 const component = event.detail;
-                const larry = new User(1, "lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", new Department(1, "Accounting"), []);
+                const larry = new UserVO("lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", DeptEnum.ACCT, []);
                 component.addUser(larry);
                 await waitFor(() => { expect(screen.getByText("lstooge")).toBeInTheDocument() });
 
@@ -96,7 +96,7 @@ describe("UserList", () => {
             window.addEventListener(ApplicationConstants.USER_LIST_MOUNTED, async (event) => {
 
                 const component = event.detail;
-                const larry = new User(1, "lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", new Department(1, "Accounting"), []);
+                const larry = new UserVO("lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", DeptEnum.ACCT, []);
                 act(() => { component.addUser(larry) });
                 await waitFor(() => { expect(screen.getByText("lstooge")).toBeInTheDocument() });
 
@@ -116,7 +116,7 @@ describe("UserList", () => {
             window.addEventListener(ApplicationConstants.USER_LIST_MOUNTED, async (event) => {
 
                 const component = event.detail;
-                const larry = new User(1, "lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", new Department(1, "Accounting"), []);
+                const larry = new UserVO("lstooge","Larry", "Stooge", "larry@stooges.com", "ijk456", DeptEnum.ACCT, []);
                 act(() => { component.addUser(larry) });
                 await waitFor(() => { expect(screen.getByText("lstooge")).toBeInTheDocument() });
 
