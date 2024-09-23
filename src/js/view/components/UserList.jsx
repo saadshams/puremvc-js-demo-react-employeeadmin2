@@ -11,12 +11,6 @@ import {useEffect, useMemo, useState} from "react";
 import {ApplicationConstants} from "../../ApplicationConstants";
 import {User} from "../../model/valueObject/User";
 
-export class UserListEvents {
-    static NEW   = "events/user/list/new";
-    static SELECT= "events/user/list/select";
-    static DELETE= "events/user/list/delete";
-}
-
 export const UserList = () => {
 
     const [users, setUsers] = useState([]); // User/Service Data
@@ -25,6 +19,9 @@ export const UserList = () => {
 
     /**
      * @typedef {Object} UserList
+     * @property {string} NEW
+     * @property {string} SELECT
+     * @property {string} DELETE
      * @property {(users: User[]) => void} setUsers
      * @property {(user: User) => void} addUser
      * @property {(user: User) => void} updateUser
@@ -33,6 +30,10 @@ export const UserList = () => {
      * @property {(error: string) => void} setError
      */
     const component = useMemo(() => ({
+        NEW: "events/user/list/new",
+        SELECT: "events/user/list/select",
+        DELETE: "events/user/list/delete",
+
         setUsers: setUsers,
         addUser: (user) => {
             setUsers(state => [...state, user]);
@@ -58,17 +59,17 @@ export const UserList = () => {
     }, [component]);
 
     const onNew = () => {
-        dispatchEvent(new CustomEvent(UserListEvents.NEW, {detail: new User()}));
+        dispatchEvent(new CustomEvent(component.NEW, {detail: new User()}));
         setSelectedUser(null);
     }
 
     const onSelect = (user) => {
-        dispatchEvent(new CustomEvent(UserListEvents.SELECT, {detail: user}));
+        dispatchEvent(new CustomEvent(component.SELECT, {detail: user}));
         setSelectedUser(user);
     }
 
     const onDelete = (user) => {
-        dispatchEvent(new CustomEvent(UserListEvents.DELETE, {detail: user}))
+        dispatchEvent(new CustomEvent(component.DELETE, {detail: user}))
         setUsers(state => state.filter(u => u.id !== user.id));
         setSelectedUser(null);
     }
