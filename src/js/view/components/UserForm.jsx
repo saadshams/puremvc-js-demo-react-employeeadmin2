@@ -9,8 +9,8 @@
 import styles from "../../../css/form.module.css"
 import {useEffect, useMemo, useState} from "react";
 import {ApplicationConstants} from "../../ApplicationConstants";
-import {User} from "../../model/valueObject/User";
-import {Department} from "../../model/valueObject/Department.js";
+import {User} from "../../model/data/valueObject/User";
+import {Department} from "../../model/data/valueObject/Department.js";
 
 export const UserForm = () => {
 

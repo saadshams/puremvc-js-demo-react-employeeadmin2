@@ -6,7 +6,7 @@
 //  Your reuse is governed by the BSD 3-Clause License
 //
 
-import {Department} from "./Department";
+import {Department} from "./Department.js";
 import {Role} from "./Role.js";
 
 export class User {

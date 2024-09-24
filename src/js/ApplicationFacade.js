@@ -27,7 +27,7 @@ export class ApplicationFacade extends Facade {
     initializeController() {
         super.initializeController();
         this.registerCommand(ApplicationFacade.STARTUP, () => new StartupCommand());
-        this.registerCommand(ApplicationFacade.REGISTER, () => new RegisterCommand());
+        // this.registerCommand(ApplicationFacade.REGISTER, () => new RegisterCommand());
     }
 
     /**

@@ -8,7 +8,7 @@
 
 import {Proxy} from "@puremvc/puremvc-js-multicore-framework";
 import {ApplicationConstants} from "../ApplicationConstants";
-import {Role} from "./valueObject/Role";
+import {Role} from "./data/valueObject/Role";
 
 export class RoleProxy extends Proxy {
 

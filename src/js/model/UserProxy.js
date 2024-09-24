@@ -8,8 +8,8 @@
 
 import {Proxy} from "@puremvc/puremvc-js-multicore-framework";
 import {ApplicationConstants} from "../ApplicationConstants";
-import {User} from "./valueObject/User";
-import {Department} from "./valueObject/Department";
+import {User} from "./data/valueObject/User";
+import {Department} from "./data/valueObject/Department";
 
 export class UserProxy extends Proxy {
 

@@ -9,7 +9,7 @@
 import styles from "../../../css/role.module.css"
 import {useEffect, useMemo, useState} from "react";
 import {ApplicationConstants} from "../../ApplicationConstants";
-import {Role} from "../../model/valueObject/Role";
+import {Role} from "../../model/data/valueObject/Role";
 
 export const UserRole = () => {
 

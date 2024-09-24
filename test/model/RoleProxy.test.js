@@ -9,7 +9,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {ApplicationConstants} from "../../src/js/ApplicationConstants.js";
 import {RoleProxy} from "../../src/js/model/RoleProxy.js";
-import {Role} from "../../src/js/model/valueObject/Role.js";
+import {Role} from "../../src/js/model/data/valueObject/Role.js";
 
 vi.mock("../../src/js/model/valueObject/Role.js", () => ({
     Role: {
