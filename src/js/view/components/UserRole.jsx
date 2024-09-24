@@ -9,11 +9,7 @@
 import styles from "../../../css/role.module.css"
 import {useEffect, useMemo, useState} from "react";
 import {ApplicationConstants} from "../../ApplicationConstants";
-import {Role} from "../../model/valueObject/Role";
-
-export class UserRoleEvents {
-	static UPDATE = "events/user/role/update";
-}
+import {Role} from "../../model/data/valueObject/Role";
 
 export const UserRole = () => {
 
@@ -24,12 +20,15 @@ export const UserRole = () => {
 
 	/**
 	 * @typedef {Object} UserRole
+	 * @property {string} UPDATE
 	 * @property {(roles: Role[]) => void} setRoles
 	 * @property {(user: User) => void} setUser
 	 * @property {(error: string) => void} setError
 	 * @property {() => void} reset
 	 */
 	const component = useMemo(() => ({
+		UPDATE: "events/user/role/update",
+
 		setRoles: setRoles,
 		setUser: (u) => {
 			setRole(Role.NONE_SELECTED);
@@ -56,7 +55,7 @@ export const UserRole = () => {
 	const onAdd = () => {
 		setUser(state => {
 			const data = {...state, roles: [...state.roles, roles.find(r => r.id === role.id)]};
-			dispatchEvent(new CustomEvent(UserRoleEvents.UPDATE, {detail: data}));
+			dispatchEvent(new CustomEvent(component.UPDATE, {detail: data}));
 			return data;
 		});
 	};
@@ -64,7 +63,7 @@ export const UserRole = () => {
 	const onRemove = () => {
 		setUser(state => {
 			const data = {...state, roles: user.roles.filter(r => r.id !== role.id)};
-			dispatchEvent(new CustomEvent(UserRoleEvents.UPDATE, {detail: data}));
+			dispatchEvent(new CustomEvent(component.UPDATE, {detail: data}));
 			return data;
 		});
 	};

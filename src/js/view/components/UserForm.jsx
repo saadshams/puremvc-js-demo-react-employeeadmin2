@@ -9,14 +9,8 @@
 import styles from "../../../css/form.module.css"
 import {useEffect, useMemo, useState} from "react";
 import {ApplicationConstants} from "../../ApplicationConstants";
-import {User} from "../../model/valueObject/User";
-import {Department} from "../../model/valueObject/Department.js";
-
-export class UserFormEvents {
-	static SAVE   = "events/user/form/save";
-	static UPDATE = "events/user/form/update";
-	static CANCEL = "events/user/form/cancel";
-}
+import {User} from "../../model/data/valueObject/User";
+import {Department} from "../../model/data/valueObject/Department.js";
 
 export const UserForm = () => {
 
@@ -26,12 +20,19 @@ export const UserForm = () => {
 
 	/**
 	 * @typedef {Object} UserForm
+	 * @property {string} SAVE
+	 * @property {string} UPDATE
+	 * @property {string} CANCEL
 	 * @property {(departments: Department[]) => void} setDepartments
 	 * @property {(user: User) => void} setUser
 	 * @property {(error: string) => void} setError
 	 * @property {() => void} reset
 	 */
 	const component = useMemo(() => ({
+		SAVE: "events/user/form/save",
+		UPDATE: "events/user/form/update",
+		CANCEL: "events/user/form/cancel",
+
 		setDepartments: setDepartments,
 		setUser: setUser,
 		setError: setError,
@@ -56,14 +57,14 @@ export const UserForm = () => {
 
 	const onSave = () => {
 		delete user.roles; // update user fields only without roles, roles are saved/updated separately.
-		const type = user.id === 0 ? UserFormEvents.SAVE : UserFormEvents.UPDATE;
+		const type = user.id === 0 ? component.SAVE : component.UPDATE;
 		dispatchEvent(new CustomEvent(type, {detail: user}));
 		setUser(new User());
 	}
 
 	const onCancel = () => {
 		setUser(new User());
-		dispatchEvent(new CustomEvent(UserFormEvents.CANCEL));
+		dispatchEvent(new CustomEvent(component.CANCEL));
 	}
 
 	return (

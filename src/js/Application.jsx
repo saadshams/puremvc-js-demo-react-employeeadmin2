@@ -13,6 +13,8 @@ import {UserList} from "./view/components/UserList";
 import {UserForm} from "./view/components/UserForm";
 import {UserRole} from "./view/components/UserRole";
 import {ApplicationFacade} from "./ApplicationFacade";
+import {Provider} from "react-redux";
+import {store} from "./model/connections/Store"
 
 const Application = () => {
 
@@ -22,9 +24,11 @@ const Application = () => {
 
     return (
         <div className="fluid">
-            <UserList />
-            <UserForm />
-            <UserRole />
+            <Provider store={store}>
+                <UserList />
+                <UserForm />
+                <UserRole />
+            </Provider>
         </div>
     );
 

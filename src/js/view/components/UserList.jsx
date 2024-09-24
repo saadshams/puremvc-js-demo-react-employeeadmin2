@@ -7,75 +7,38 @@
 //
 
 import styles from "../../../css/list.module.css"
-import {useEffect, useMemo, useState} from "react";
-import {ApplicationConstants} from "../../ApplicationConstants";
-import {User} from "../../model/valueObject/User";
-
-export class UserListEvents {
-    static NEW   = "events/user/list/new";
-    static SELECT= "events/user/list/select";
-    static DELETE= "events/user/list/delete";
-}
+import {useState} from "react";
+import {UserListViewModel} from "../UserListViewModel.js";
 
 export const UserList = () => {
 
-    const [users, setUsers] = useState([]); // User/Service Data
+    const {users, loading, error} = UserListViewModel();
     const [selectedUser, setSelectedUser] = useState(null); // Input/Form Data
-    const [error, setError] = useState(null);
-
-    /**
-     * @typedef {Object} UserList
-     * @property {(users: User[]) => void} setUsers
-     * @property {(user: User) => void} addUser
-     * @property {(user: User) => void} updateUser
-     * @property {(user: User) => void} updateRoles
-     * @property {() => void} deSelect
-     * @property {(error: string) => void} setError
-     */
-    const component = useMemo(() => ({
-        setUsers: setUsers,
-        addUser: (user) => {
-            setUsers(state => [...state, user]);
-        },
-        updateUser: (user) => {
-            setUsers(state => state.map(u => u.id === user.id ? user : u));
-            setSelectedUser(null);
-        },
-        updateRoles: (user) => {
-            setUsers(state => state.map(u => u.id === user.id ? user : u));
-        },
-        deSelect: () => {
-            setSelectedUser(null);
-        },
-        setError: setError
-    }), [setUsers, setSelectedUser, setError]);
-
-    useEffect(() => {
-        dispatchEvent(new CustomEvent(ApplicationConstants.USER_LIST_MOUNTED, {detail: component}));
-        return () => {
-            dispatchEvent(new CustomEvent(ApplicationConstants.USER_LIST_UNMOUNTED));
-        }
-    }, [component]);
 
     const onNew = () => {
-        dispatchEvent(new CustomEvent(UserListEvents.NEW, {detail: new User()}));
+        // dispatchEvent(new CustomEvent(component.NEW, {detail: new User()}));
         setSelectedUser(null);
     }
 
     const onSelect = (user) => {
-        dispatchEvent(new CustomEvent(UserListEvents.SELECT, {detail: user}));
+        // dispatchEvent(new CustomEvent(component.SELECT, {detail: user}));
         setSelectedUser(user);
     }
 
     const onDelete = (user) => {
-        dispatchEvent(new CustomEvent(UserListEvents.DELETE, {detail: user}))
-        setUsers(state => state.filter(u => u.id !== user.id));
+        // dispatchEvent(new CustomEvent(component.DELETE, {detail: user}))
+        // setUsers(state => state.filter(u => u.id !== user.id));
         setSelectedUser(null);
     }
 
     return (
         <section id="list">
-            {error ? (
+            {loading ? (
+                <div className={styles.list}>
+                    <header><h2>User List</h2></header>
+                    <main>Loading...</main>
+                </div>
+            ) : error ? (
                 <div className={styles.list}>
                     <header><h2>User List</h2></header>
                     <main>Error: {error.message}</main>
