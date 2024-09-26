@@ -8,11 +8,11 @@
 
 import styles from "../../../css/list.module.css"
 import {useState} from "react";
-import {UserListViewModel} from "../UserListViewModel.js";
+import { useFindAllUsersQuery, useDeleteByUserIdMutation } from "../../model/service/userService.js";
 
 export const UserList = () => {
 
-    const {users, loading, error} = UserListViewModel();
+    const {data, isLoading, error} = useFindAllUsersQuery();
     const [selectedUser, setSelectedUser] = useState(null); // Input/Form Data
 
     const onNew = () => {
@@ -33,7 +33,7 @@ export const UserList = () => {
 
     return (
         <section id="list">
-            {loading ? (
+            {isLoading ? (
                 <div className={styles.list}>
                     <header><h2>User List</h2></header>
                     <main>Loading...</main>
@@ -59,7 +59,7 @@ export const UserList = () => {
                                 <span>Password</span>
                                 <span>Department</span>
                             </li>
-                            {users.map(user => (
+                            {data.map(user => (
                                 <li key={`user_${user.id}`}>
                                     <input type="radio" id={`users_radio${user.id}`} name="users" value={user.id}
                                            onChange={() => onSelect(user)}
