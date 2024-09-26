@@ -1,15 +1,21 @@
-import {useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {UserService} from "../model/service/UserService.js";
+import {useFindAllUsersQuery, useDeleteByUserIdMutation} from "../model/service/userService.js";
 
-export const UserListViewModel = () => {
+export const useUserViewModel = () => {
 
-    const dispatch = useDispatch();
-    const {users, loading, error} = useSelector((state) => state.userSlice);
+    // const {data: users, isLoading: isFetching, error: fetchError} = useFindAllUsersQuery();
+    // const [deleteByUserId, {isLoading: isDeleting, isError: deleteError, isSuccess: deleteSuccess}] = useDeleteByUserIdMutation();
 
-    useEffect(() => {
-        dispatch(UserService.findAllUsers());
-    }, [dispatch]);
+    // const handleDeleteUser = async (id) => {
+    //     try {
+    //         await deleteByUserId(id).unwrap();
+    //         console.log(`User ${id} deleted successfully`);
+    //     } catch (error) {
+    //         console.error("Failed to delete user:", error);
+    //     }
+    // };
 
-    return {users, loading, error};
-}
+    return {
+        findAllUsers: useFindAllUsersQuery(),
+        deleteByUserId: useDeleteByUserIdMutation()
+    }
+};

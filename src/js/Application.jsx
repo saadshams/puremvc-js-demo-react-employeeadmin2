@@ -9,12 +9,12 @@
 import "../css/_base.css"
 import "../css/_layout.css";
 import "../css/_theme.css"
+import {Provider} from "react-redux";
 import {UserList} from "./view/components/UserList";
 import {UserForm} from "./view/components/UserForm";
 import {UserRole} from "./view/components/UserRole";
 import {ApplicationFacade} from "./ApplicationFacade";
-import {Provider} from "react-redux";
-import {store} from "./model/connections/Store"
+import {store} from "./model/service/store.js"
 
 const Application = () => {
 
