@@ -7,41 +7,51 @@
 //
 
 import styles from "../../../css/list.module.css"
-import {useState} from "react";
-import { useFindAllUsersQuery, useDeleteByUserIdMutation } from "../../model/service/userService.js";
+import PropTypes from "prop-types";
+import {User} from "../../model/valueObject/User.js";
+import {useFindAllQuery, useDeleteByIdMutation} from "../../model/service/userService.js";
 
-export const UserList = () => {
+/**
+ * UserList component
+ *
+ * @param {Object} props - The component props
+ * @param {User} props.user - The user object
+ * @param {function} props.setUser - Function to set the user
+ * @returns {JSX.Element} The rendered component
+ */
+export const UserList = ({user, setUser}) => {
 
-    const {data, isLoading, error} = useFindAllUsersQuery();
-    const [selectedUser, setSelectedUser] = useState(null); // Input/Form Data
+    const users= useFindAllQuery(); // User Data
+    const [deleteById] = useDeleteByIdMutation();
 
     const onNew = () => {
-        // dispatchEvent(new CustomEvent(component.NEW, {detail: new User()}));
-        setSelectedUser(null);
+        setUser(User.create());
     }
 
     const onSelect = (user) => {
-        // dispatchEvent(new CustomEvent(component.SELECT, {detail: user}));
-        setSelectedUser(user);
+        setUser(user);
     }
 
-    const onDelete = (user) => {
-        // dispatchEvent(new CustomEvent(component.DELETE, {detail: user}))
-        // setUsers(state => state.filter(u => u.id !== user.id));
-        setSelectedUser(null);
+    const onDelete = async (user) => {
+        try {
+            await deleteById(user).unwrap();
+        } catch(error) {
+            console.log(error);
+        }
+        setUser(User.create());
     }
 
     return (
         <section id="list">
-            {isLoading ? (
+            {users.isLoading ? (
                 <div className={styles.list}>
                     <header><h2>User List</h2></header>
                     <main>Loading...</main>
                 </div>
-            ) : error ? (
+            ) : users.isError ? (
                 <div className={styles.list}>
                     <header><h2>User List</h2></header>
-                    <main>Error: {error.message}</main>
+                    <main>Error: {users.error.message}</main>
                 </div>
             ) : (
                 <div className={styles.list}>
@@ -59,20 +69,20 @@ export const UserList = () => {
                                 <span>Password</span>
                                 <span>Department</span>
                             </li>
-                            {data.map(user => (
-                                <li key={`user_${user.id}`}>
-                                    <input type="radio" id={`users_radio${user.id}`} name="users" value={user.id}
-                                           onChange={() => onSelect(user)}
-                                           checked={selectedUser !== null && selectedUser.id === user.id}/>
+                            {users.isSuccess && users.data.map(u => (
+                                <li key={`user_${u.id}`}>
+                                    <input type="radio" id={`users_radio${u.id}`} name="users" value={u.id}
+                                           onChange={() => onSelect(u)}
+                                           checked={user.id === u.id}/>
 
-                                    <label htmlFor={`users_radio${user.id}`}>
-                                        <span>{user.last}, {user.first}</span>
-                                        <span>{user.username}</span>
-                                        <span>{user.first}</span>
-                                        <span>{user.last}</span>
-                                        <span>{user.email}</span>
-                                        <span>{user.password}</span>
-                                        <span>{user.department.name}</span>
+                                    <label htmlFor={`users_radio${u.id}`}>
+                                        <span>{u.last}, {u.first}</span>
+                                        <span>{u.username}</span>
+                                        <span>{u.first}</span>
+                                        <span>{u.last}</span>
+                                        <span>{u.email}</span>
+                                        <span>{u.password}</span>
+                                        <span>{u.department.name}</span>
                                     </label>
                                 </li>
                             ))}
@@ -80,11 +90,16 @@ export const UserList = () => {
                     </main>
                     <footer>
                         <button id="add" className="primary" onClick={() => onNew()}>Add</button>
-                        <button id="delete" className="outline-primary" onClick={() => onDelete(selectedUser)}
-                                data-disabled={selectedUser === null}>Delete</button>
+                        <button id="delete" className="outline-primary" onClick={() => onDelete(user)}
+                                data-disabled={user === null}>Delete</button>
                     </footer>
                 </div>
             )}
         </section>
     );
+};
+
+UserList.propTypes = {
+    user: PropTypes.object.isRequired,
+    setUser: PropTypes.func.isRequired,
 };

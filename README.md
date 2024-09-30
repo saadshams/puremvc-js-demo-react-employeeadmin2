@@ -15,6 +15,9 @@ cd puremvc-js-demo-react-employeeadmin
 npm install && npm run build && npm run preview
 ```
 
+## Adminer
+* Launch [Adminer](http://localhost:8080/?server=mysql&username=mysql&db=employeeadmin) pwd: password
+
 ## Screenshot
 ![PureMVC JavaScript Demo: Employee Admin](http://puremvc.org/pages/images/screenshots/PureMVC-Shot-JS-EmployeeAdmin2.png?github)
 

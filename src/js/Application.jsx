@@ -10,24 +10,23 @@ import "../css/_base.css"
 import "../css/_layout.css";
 import "../css/_theme.css"
 import {Provider} from "react-redux";
+import {useState} from "react";
 import {UserList} from "./view/components/UserList";
 import {UserForm} from "./view/components/UserForm";
 import {UserRole} from "./view/components/UserRole";
-import {ApplicationFacade} from "./ApplicationFacade";
-import {store} from "./model/service/store.js"
+import {apiStore} from "./model/service/apiStore.js"
+import {User} from "./model/valueObject/User.js";
 
 const Application = () => {
 
-    ApplicationFacade
-        .getInstance("EmployeeAdmin", key => new ApplicationFacade(key))
-        .startup();
+    const [user, setUser] = useState(User.create()); // Shared Data
 
     return (
         <div className="fluid">
-            <Provider store={store}>
-                <UserList />
-                <UserForm />
-                <UserRole />
+            <Provider store={apiStore}>
+                <UserList user={user} setUser={setUser} />
+                <UserForm user={user} setUser={setUser} />
+                <UserRole user={user} setUser={setUser} />
             </Provider>
         </div>
     );

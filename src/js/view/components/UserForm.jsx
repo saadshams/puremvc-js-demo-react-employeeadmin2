@@ -7,64 +7,52 @@
 //
 
 import styles from "../../../css/form.module.css"
-import {useEffect, useMemo, useState} from "react";
-import {ApplicationConstants} from "../../ApplicationConstants";
-import {User} from "../../model/data/valueObject/User";
-import {Department} from "../../model/data/valueObject/Department.js";
+import {useEffect, useRef, useState} from "react";
+import {User} from "../../model/valueObject/User.js";
+import {Department} from "../../model/valueObject/Department.js";
+import {useFindAllDepartmentsQuery, useSaveMutation, useUpdateMutation} from "../../model/service/userService.js";
+import PropTypes from "prop-types";
 
-export const UserForm = () => {
+/**
+ * UserForm component
+ *
+ * @param {Object} props - The component props
+ * @param {User} props.user - The user object
+ * @param {function} props.setUser - Function to set the user
+ * @returns {JSX.Element} The rendered component
+ */
+export const UserForm = ({user, setUser}) => {
 
-	const [departments, setDepartments] = useState([]); // UI Data
-	const [user, setUser] = useState(new User()); // User/Service/Input/Form Data
+	const departments = useFindAllDepartmentsQuery(); // Application Data
+	const confirm = useRef(null); // Input/Form Data
+	const [save] = useSaveMutation();
+	const [update] = useUpdateMutation();
 	const [error, setError] = useState(null);
 
-	/**
-	 * @typedef {Object} UserForm
-	 * @property {string} SAVE
-	 * @property {string} UPDATE
-	 * @property {string} CANCEL
-	 * @property {(departments: Department[]) => void} setDepartments
-	 * @property {(user: User) => void} setUser
-	 * @property {(error: string) => void} setError
-	 * @property {() => void} reset
-	 */
-	const component = useMemo(() => ({
-		SAVE: "events/user/form/save",
-		UPDATE: "events/user/form/update",
-		CANCEL: "events/user/form/cancel",
-
-		setDepartments: setDepartments,
-		setUser: setUser,
-		setError: setError,
-		reset: () => {
-			setUser(new User());
-		}
-	}), [setDepartments, setUser, setError]);
-
 	useEffect(() => {
-		dispatchEvent(new CustomEvent(ApplicationConstants.USER_FORM_MOUNTED, {detail: component}));
-		return () => {
-			dispatchEvent(new CustomEvent(ApplicationConstants.USER_FORM_UNMOUNTED));
-		}
-	}, [component]);
+		if (user.id !== 0)
+			confirm.current.value = user.password;
+	}, [user]);
 
 	const onChange = (event) => {
 		const {id, value} = event.target;
 		setUser(state => ({ // update fields
-			...state, [id]: id === "department" ? departments.find(d => d.id === parseInt(value)) : value
+			...state, [id]: id === "department" ? departments.data.find(d => d.id === parseInt(value)) : value
 		}));
 	}
 
-	const onSave = () => {
-		delete user.roles; // update user fields only without roles, roles are saved/updated separately.
-		const type = user.id === 0 ? component.SAVE : component.UPDATE;
-		dispatchEvent(new CustomEvent(type, {detail: user}));
-		setUser(new User());
+	const onSave = async () => {
+		try {
+			user.id === 0 ? await save(user).unwrap() : await update(user).unwrap();
+			setUser(User.create());
+			confirm.current.value = "";
+		} catch(e) {
+			console.log(e);
+		}
 	}
 
 	const onCancel = () => {
-		setUser(new User());
-		dispatchEvent(new CustomEvent(component.CANCEL));
+		setUser(User.create());
 	}
 
 	return (
@@ -103,13 +91,13 @@ export const UserForm = () => {
 							</li>
 							<li>
 								<label htmlFor="confirm">Confirm:</label>
-								<input id="confirm" type="password" value={user.confirm} onChange={onChange} required/>
+								<input ref={confirm} id="confirm" type="password" value={user.confirm} onChange={onChange} required/>
 							</li>
 							<li>
 								<label htmlFor="department">Department:</label>
 								<select id="department" value={user.department.id} onChange={onChange}>
 									<option value={Department.NONE_SELECTED.id}>{Department.NONE_SELECTED.name}</option>
-									{departments.map(department => (
+									{departments.isSuccess && departments.data.map(department => (
 										<option key={`department_${department.id}`}
 										        value={department.id}>{department.name}</option>
 									))}
@@ -118,7 +106,7 @@ export const UserForm = () => {
 						</ul>
 					</main>
 					<footer>
-						<button className="primary" disabled={!User.isValid(user)}
+						<button className="primary" disabled={!User.isValid(user, confirm.current)}
 						        onClick={() => onSave()}>{user.id === 0 ? "Save" : "Update"}</button>
 						<button className="outline-primary" onClick={() => onCancel()}>Cancel
 						</button>
@@ -127,4 +115,9 @@ export const UserForm = () => {
 			)}
 		</section>
 	)
+};
+
+UserForm.propTypes = {
+	user: PropTypes.object.isRequired,
+	setUser: PropTypes.func.isRequired,
 };

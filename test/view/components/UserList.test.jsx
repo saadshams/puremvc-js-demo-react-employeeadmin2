@@ -10,8 +10,8 @@ import {fireEvent, render, screen, waitFor} from "@testing-library/react"
 import {describe, expect, it} from "vitest";
 import {act} from "react";
 import {ApplicationConstants} from "../../../src/js/ApplicationConstants.js";
-import {User} from "../../../src/js/model/data/valueObject/User.js";
-import {Department} from "../../../src/js/model/data/valueObject/Department.js";
+import {User} from "../../../src/js/model/valueObject/User.js";
+import {Department} from "../../../src/js/model/valueObject/Department.js";
 import {UserListEvents, UserList} from "../../../src/js/view/components/UserList.jsx";
 
 // Testing setters and events
