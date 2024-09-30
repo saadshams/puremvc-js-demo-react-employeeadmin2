@@ -22,7 +22,7 @@ import {useFindAllQuery, useDeleteByIdMutation} from "../../model/service/userSe
 export const UserList = ({user, setUser}) => {
 
     const users= useFindAllQuery(); // User Data
-    const [deleteById] = useDeleteByIdMutation();
+    const [deleteById, status] = useDeleteByIdMutation();
 
     const onNew = () => {
         setUser(User.create());
@@ -33,12 +33,8 @@ export const UserList = ({user, setUser}) => {
     }
 
     const onDelete = async (user) => {
-        try {
-            await deleteById(user).unwrap();
-            setUser(User.create());
-        } catch(error) {
-            console.log(error);
-        }
+        await deleteById(user).unwrap();
+        setUser(User.create());
     }
 
     return (
@@ -89,9 +85,11 @@ export const UserList = ({user, setUser}) => {
                         </ul>
                     </main>
                     <footer>
+                        <div className={styles.error}>{status.error && status.error.message}</div>
                         <button id="add" className="primary" onClick={() => onNew()}>Add</button>
                         <button id="delete" className="outline-primary" onClick={() => onDelete(user)}
-                                disabled={user.id === 0}>Delete</button>
+                                disabled={user.id === 0}>Delete
+                        </button>
                     </footer>
                 </div>
             )}

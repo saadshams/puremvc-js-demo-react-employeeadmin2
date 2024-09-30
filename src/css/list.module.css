@@ -89,6 +89,12 @@
     margin-top: auto;
 }
 
+.list footer .error {
+    color: red;
+    max-height: 100%;
+    overflow: hidden;
+}
+
 @media (prefers-color-scheme: dark) {
     .list main ul li:first-child { /* row: first child (sticky header) */
         color: var(--background-color);

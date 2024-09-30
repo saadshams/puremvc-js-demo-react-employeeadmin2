@@ -25,8 +25,8 @@ const Application = () => {
         <div className="fluid">
             <Provider store={store}>
                 <UserList user={user} setUser={setUser} />
-                <UserForm user={user} setUser={setUser} />
-                <UserRole user={user} setUser={setUser} />
+                <UserForm user={user} />
+                <UserRole user={user} />
             </Provider>
         </div>
     );

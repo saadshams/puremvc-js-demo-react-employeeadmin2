@@ -7,7 +7,7 @@
 //
 
 import styles from "../../../css/role.module.css"
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import PropTypes from "prop-types";
 import {useFindAllQuery, useFindByIdQuery, useUpdateByIdMutation} from "../../model/service/roleService.js";
 import {Role} from "../../model/valueObject/Role";
@@ -17,30 +17,25 @@ import {Role} from "../../model/valueObject/Role";
  *
  * @param {Object} props - The component props
  * @param {User} props.user - The user object
- * @param {function} props.setUser - Function to set the user
  * @returns {JSX.Element} The rendered component
  */
-export const UserRole = ({user, setUser}) => {
+export const UserRole = ({user}) => {
 
 	const roles = useFindAllQuery(); // Application Data
 	const findById = useFindByIdQuery({ id: user.id }, { skip: user.id === 0 }); // User Data
-	const [role, setRole] = useState(Role.NONE_SELECTED); // Input/Form Data
-	const dropdown = useRef(null);
+	const [role, setRole] = useState(Role.NONE_SELECTED); // Form Data
+	const [update] = useUpdateByIdMutation(); // Actions
 
-	const [update] = useUpdateByIdMutation();
+	const dropdown = useRef(null);
 
 	const onChange = (event) => {
 		setRole(roles.data.find(r => r.id === parseInt(event.target.value)));
 	}
 
 	const onAdd = async () => {
-		try {
-			const newRoles = [...findById.data, roles.data.find(r => r.id === role.id)];
-			await update({id: user.id, roles: newRoles}).unwrap();
-			dropdown.current.selectedIndex = 0;
-		} catch(e) {
-			console.log(e);
-		}
+		const newRoles = [...findById.data, roles.data.find(r => r.id === role.id)];
+		await update({id: user.id, roles: newRoles}).unwrap();
+		dropdown.current.selectedIndex = 0;
 	};
 
 	const onRemove = async () => {
@@ -88,6 +83,5 @@ export const UserRole = ({user, setUser}) => {
 };
 
 UserRole.propTypes = {
-	user: PropTypes.object.isRequired,
-	setUser: PropTypes.func.isRequired,
+	user: PropTypes.object.isRequired
 };
