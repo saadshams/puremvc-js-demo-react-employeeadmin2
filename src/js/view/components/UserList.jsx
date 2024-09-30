@@ -35,10 +35,10 @@ export const UserList = ({user, setUser}) => {
     const onDelete = async (user) => {
         try {
             await deleteById(user).unwrap();
+            setUser(User.create());
         } catch(error) {
             console.log(error);
         }
-        setUser(User.create());
     }
 
     return (
@@ -91,7 +91,7 @@ export const UserList = ({user, setUser}) => {
                     <footer>
                         <button id="add" className="primary" onClick={() => onNew()}>Add</button>
                         <button id="delete" className="outline-primary" onClick={() => onDelete(user)}
-                                data-disabled={user === null}>Delete</button>
+                                disabled={user.id === 0}>Delete</button>
                     </footer>
                 </div>
             )}

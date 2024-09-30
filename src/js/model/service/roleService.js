@@ -12,7 +12,7 @@ import {ApplicationConstants} from "../../ApplicationConstants.js";
 export const roleService = createApi({
     reducerPath: "roleService",
     baseQuery: fetchBaseQuery({baseUrl: ApplicationConstants.API_URL}),
-    tagTypes: ["users", "roles"],
+    tagTypes: ["roles"],
 
     endpoints: (builder) => ({
 
@@ -20,15 +20,15 @@ export const roleService = createApi({
             query: () => ({
                 method: "GET",
                 url: "/roles"
-            }),
-            providesTags: ["roles"]
+            })
         }),
 
         findById: builder.query({
             query: ({id}) => ({
                 method: "GET",
                 url: `/users/${id}/roles`
-            })
+            }),
+            providesTags: ["roles"]
         }),
 
         updateById: builder.mutation({
@@ -36,7 +36,8 @@ export const roleService = createApi({
                 method: "PUT",
                 url: `/users/${id}/roles`,
                 body: roles
-            })
+            }),
+            invalidatesTags: ["roles"]
         })
 
     })

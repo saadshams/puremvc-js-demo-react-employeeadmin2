@@ -44,8 +44,8 @@ export const UserForm = ({user, setUser}) => {
 	const onSave = async () => {
 		try {
 			user.id === 0 ? await save(user).unwrap() : await update(user).unwrap();
-			setUser(User.create());
 			confirm.current.value = "";
+			setUser(User.create());
 		} catch(e) {
 			console.log(e);
 		}

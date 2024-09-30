@@ -7,9 +7,9 @@
 //
 
 import styles from "../../../css/role.module.css"
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import PropTypes from "prop-types";
-import {useFindAllQuery, useUpdateByIdMutation} from "../../model/service/roleService.js";
+import {useFindAllQuery, useFindByIdQuery, useUpdateByIdMutation} from "../../model/service/roleService.js";
 import {Role} from "../../model/valueObject/Role";
 
 /**
@@ -23,9 +23,11 @@ import {Role} from "../../model/valueObject/Role";
 export const UserRole = ({user, setUser}) => {
 
 	const roles = useFindAllQuery(); // Application Data
-	const [update] = useUpdateByIdMutation();
+	const findById = useFindByIdQuery({ id: user.id }, { skip: user.id === 0 }); // User Data
 	const [role, setRole] = useState(Role.NONE_SELECTED); // Input/Form Data
 	const dropdown = useRef(null);
+
+	const [update] = useUpdateByIdMutation();
 
 	const onChange = (event) => {
 		setRole(roles.data.find(r => r.id === parseInt(event.target.value)));
@@ -33,8 +35,8 @@ export const UserRole = ({user, setUser}) => {
 
 	const onAdd = async () => {
 		try {
-			const data = [...user.roles, roles.data.find(r => r.id === role.id)];
-			await update({id: user.id, roles: data}).unwrap();
+			const newRoles = [...findById.data, roles.data.find(r => r.id === role.id)];
+			await update({id: user.id, roles: newRoles}).unwrap();
 			dropdown.current.selectedIndex = 0;
 		} catch(e) {
 			console.log(e);
@@ -42,8 +44,8 @@ export const UserRole = ({user, setUser}) => {
 	};
 
 	const onRemove = async () => {
-		const data = [...user.roles, roles.data.filter(r => r.id !== role.id)];
-		await update({id: user.id, roles: data}).unwrap();
+		const newRoles = findById.data.filter(r => r.id !== role.id);
+		await update({id: user.id, roles: newRoles}).unwrap();
 		dropdown.current.selectedIndex = 0;
 	};
 
@@ -61,14 +63,14 @@ export const UserRole = ({user, setUser}) => {
 					</header>
 					<main>
 						<ul>
-							{user && user.roles.map(r => (
+							{findById.data && findById.data.map(r => (
 								<li key={`role_${r.id}`}>{r.name}</li>
 							))}
 						</ul>
 					</main>
 					<footer>
 						<label htmlFor="roles"></label>
-						<select ref={dropdown} id="roles" value={role.id} onChange={onChange} disabled={user === null}>
+						<select ref={dropdown} id="roles" value={role.id} onChange={onChange}>
 							<option value={Role.NONE_SELECTED.id}>{Role.NONE_SELECTED.name}</option>
 							{roles.isSuccess && roles.data.map(r => (
 								<option key={`role_option${r.id}`} value={r.id}>{r.name}</option>
