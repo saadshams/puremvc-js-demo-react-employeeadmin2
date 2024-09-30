@@ -34,7 +34,6 @@ export const UserRole = ({user, setUser}) => {
 	const onAdd = async () => {
 		try {
 			const data = [...user.roles, roles.data.find(r => r.id === role.id)];
-			console.log(user.id, data);
 			await update({id: user.id, roles: data}).unwrap();
 			dropdown.current.selectedIndex = 0;
 		} catch(e) {
@@ -42,12 +41,9 @@ export const UserRole = ({user, setUser}) => {
 		}
 	};
 
-	const onRemove = () => {
-		// setUser(state => {
-		// 	const data = {...state, roles: user.roles.filter(r => r.id !== role.id)};
-		// 	dispatchEvent(new CustomEvent(component.UPDATE, {detail: data}));
-		// 	return data;
-		// });
+	const onRemove = async () => {
+		const data = [...user.roles, roles.data.filter(r => r.id !== role.id)];
+		await update({id: user.id, roles: data}).unwrap();
 		dropdown.current.selectedIndex = 0;
 	};
 
