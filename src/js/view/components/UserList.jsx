@@ -22,7 +22,7 @@ import {useFindAllQuery, useDeleteByIdMutation} from "../../model/service/userSe
 export const UserList = ({user, setUser}) => {
 
     const users= useFindAllQuery(); // User Data
-    const [deleteById, deleteStatus] = useDeleteByIdMutation();
+    const [deleteById, deleteStatus] = useDeleteByIdMutation(); // Actions
 
     const onNew = () => {
         setUser(User.create());
