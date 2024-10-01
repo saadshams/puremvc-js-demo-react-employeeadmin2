@@ -7,11 +7,11 @@
 //
 
 import styles from "../../../css/form.module.css"
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
+import PropTypes from "prop-types";
 import {User} from "../../model/valueObject/User.js";
 import {Department} from "../../model/valueObject/Department.js";
 import {useFindByIdQuery, useSaveMutation, useUpdateMutation, useFindAllDepartmentsQuery} from "../../model/service/userService.js";
-import PropTypes from "prop-types";
 
 /**
  * UserForm component
@@ -24,16 +24,16 @@ export const UserForm = ({user}) => {
 
 	const departments = useFindAllDepartmentsQuery(); // Application Data
 	const findById = useFindByIdQuery({id: user.id}, {skip: user.id === 0}); // User Data
-	const [formData, setFormData] = useState(User.create()); // Form Data
+	const [formData, setFormData] = useState({...User.create(), confirm: ""}); // Form Data
+
 	const [save, saveStatus] = useSaveMutation(); // Actions
 	const [update, updateStatus] = useUpdateMutation();
 
-	const confirm = useRef(null);
-
 	useEffect(() => {
 		if (user.id !== 0 && findById.data) {
-			setFormData({...findById.data});
-			confirm.current.value = findById.data.password;
+			setFormData({...findById.data, confirm: findById.data.password});
+		} else {
+			reset();
 		}
 	}, [findById.data, user.id]);
 
@@ -45,13 +45,12 @@ export const UserForm = ({user}) => {
 	}
 
 	const onSave = async () => {
-		user.id === 0 ? await save({id: user.id, ...formData}).unwrap() : await update({id: user.id, ...formData}).unwrap();
-		confirm.current.value = "";
-		setFormData(User.create());
+		user.id === 0 ? await save(formData).unwrap() : await update(formData).unwrap();
+		setFormData({...User.create(), confirm: ""});
 	}
 
-	const onCancel = () => {
-		setFormData(User.create());
+	const reset = () => {
+		setFormData({...User.create(), confirm: ""});
 	}
 
 	return (
@@ -84,11 +83,11 @@ export const UserForm = ({user}) => {
 						</li>
 						<li>
 							<label htmlFor="confirm">Confirm:</label>
-							<input ref={confirm} id="confirm" type="password" value={formData.confirm} onChange={onChange} required/>
+							<input id="confirm" type="password" value={formData.confirm} onChange={onChange} required/>
 						</li>
 						<li>
 							<label htmlFor="department">Department:</label>
-							<select id="department" value={user.department.id} onChange={onChange} required>
+							<select id="department" value={formData.department.id} onChange={onChange} required>
 								<option value={Department.NONE_SELECTED.id}>{Department.NONE_SELECTED.name}</option>
 								{departments.isSuccess && departments.data.map(department => (
 									<option key={`department_${department.id}`} value={department.id}>{department.name}</option>
@@ -102,10 +101,10 @@ export const UserForm = ({user}) => {
 						{saveStatus.error && saveStatus.error.message}
 						{updateStatus.error && updateStatus.error.message}
 					</div>
-					<button className="primary" disabled={!User.isValid(user, confirm.current)} onClick={() => onSave()}>
+					<button className="primary" disabled={!User.isValid(formData)} onClick={() => onSave()}>
 						{user.id === 0 ? (saveStatus.isLoading ? "Saving..." : "Save") : (updateStatus.isLoading ? "Updating..." : "Update")}
 					</button>
-					<button className="outline-primary" onClick={() => onCancel()}>Cancel</button>
+					<button className="outline-primary" onClick={() => reset()}>Cancel</button>
 				</footer>
 			</div>
 		</section>

@@ -23,12 +23,12 @@ import {Department} from "./Department.js";
 export class User {
 
     static create(id = 0, username = "", first = "", last= "", email = "", password= "", department = Department.NONE_SELECTED, roles = []) {
-        return { id, username, first, last, email, password, department, roles };
+        return {id, username, first, last, email, password, department, roles};
     }
 
-    static isValid(user, confirm) {
-        return confirm && user.username !== "" && user.first !== "" && user.last !== "" && user.email !== "" &&
-            user.password !== "" && user.password === confirm.value && user.department.id !== 0;
+    static isValid(user) {
+        return user.username !== "" && user.first !== "" && user.last !== "" && user.email !== "" &&
+            user.password !== "" && user.password === user.confirm && user.department.id !== 0;
     }
 
 }

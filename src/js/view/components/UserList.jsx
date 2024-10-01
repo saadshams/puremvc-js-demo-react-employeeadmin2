@@ -22,7 +22,7 @@ import {useFindAllQuery, useDeleteByIdMutation} from "../../model/service/userSe
 export const UserList = ({user, setUser}) => {
 
     const users= useFindAllQuery(); // User Data
-    const [deleteById, status] = useDeleteByIdMutation();
+    const [deleteById, deleteStatus] = useDeleteByIdMutation();
 
     const onNew = () => {
         setUser(User.create());
@@ -39,60 +39,50 @@ export const UserList = ({user, setUser}) => {
 
     return (
         <section id="list">
-            {users.isLoading ? (
-                <div className={styles.list}>
-                    <header><h2>User List</h2></header>
-                    <main>Loading...</main>
-                </div>
-            ) : users.isError ? (
-                <div className={styles.list}>
-                    <header><h2>User List</h2></header>
-                    <main>Error: {users.error.message}</main>
-                </div>
-            ) : (
-                <div className={styles.list}>
-                    <header>
-                        <h2>User List</h2>
-                    </header>
-                    <main>
-                        <ul>
-                            <li>
-                                <span>Name</span>
-                                <span>Username</span>
-                                <span>First</span>
-                                <span>Last</span>
-                                <span>Email</span>
-                                <span>Password</span>
-                                <span>Department</span>
-                            </li>
-                            {users.isSuccess && users.data.map(u => (
-                                <li key={`user_${u.id}`}>
-                                    <input type="radio" id={`users_radio${u.id}`} name="users" value={u.id}
-                                           onChange={() => onSelect(u)}
-                                           checked={user.id === u.id}/>
+            <div className={styles.list}>
+                <header>
+                    <h2>User List</h2>
+                </header>
+                <main>
+                    <ul>
+                        <li>
+                            <span>Name</span>
+                            <span>Username</span>
+                            <span>First</span>
+                            <span>Last</span>
+                            <span>Email</span>
+                            <span>Password</span>
+                            <span>Department</span>
+                        </li>
+                        {users.isSuccess && users.data.map(u => (
+                            <li key={`user_${u.id}`}>
+                                <input type="radio" id={`users_radio${u.id}`} name="users" value={u.id}
+                                       onChange={() => onSelect(u)}
+                                       checked={user.id === u.id}/>
 
-                                    <label htmlFor={`users_radio${u.id}`}>
-                                        <span>{u.last}, {u.first}</span>
-                                        <span>{u.username}</span>
-                                        <span>{u.first}</span>
-                                        <span>{u.last}</span>
-                                        <span>{u.email}</span>
-                                        <span>{u.password}</span>
-                                        <span>{u.department.name}</span>
-                                    </label>
-                                </li>
-                            ))}
-                        </ul>
-                    </main>
-                    <footer>
-                        <div className={styles.error}>{status.error && status.error.message}</div>
-                        <button id="add" className="primary" onClick={() => onNew()}>Add</button>
-                        <button id="delete" className="outline-primary" onClick={() => onDelete(user)}
-                                disabled={user.id === 0}>Delete
-                        </button>
-                    </footer>
-                </div>
-            )}
+                                <label htmlFor={`users_radio${u.id}`}>
+                                    <span>{u.last}, {u.first}</span>
+                                    <span>{u.username}</span>
+                                    <span>{u.first}</span>
+                                    <span>{u.last}</span>
+                                    <span>{u.email}</span>
+                                    <span>{u.password}</span>
+                                    <span>{u.department.name}</span>
+                                </label>
+                            </li>
+                        ))}
+                    </ul>
+                </main>
+                <footer>
+                    <div className={styles.error}>
+                        {users.isError && users.error.message}
+                        {deleteStatus.error && deleteStatus.error.message}
+                    </div>
+                    <button id="add" className="primary" onClick={() => onNew()}>Add</button>
+                    <button id="delete" className="outline-primary" onClick={() => onDelete(user)}
+                            disabled={user.id === 0}>Delete</button>
+                </footer>
+            </div>
         </section>
     );
 };

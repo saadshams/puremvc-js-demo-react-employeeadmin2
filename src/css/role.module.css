@@ -42,3 +42,9 @@
 .role footer select {
     flex: 2;
 }
+
+.role footer .error {
+    color: red;
+    max-height: 100%;
+    overflow: hidden;
+}
