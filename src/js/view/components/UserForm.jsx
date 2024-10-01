@@ -98,6 +98,8 @@ export const UserForm = ({user}) => {
 				</main>
 				<footer>
 					<div className={styles.error}>
+						{departments.error && departments.error.message}
+						{findById.isError && findById.error.message}
 						{saveStatus.error && saveStatus.error.message}
 						{updateStatus.error && updateStatus.error.message}
 					</div>

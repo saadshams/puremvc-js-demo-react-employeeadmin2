@@ -74,6 +74,7 @@ export const UserRole = ({user}) => {
 					        disabled={formData === Role.NONE_SELECTED}>Remove</button>
 					<div className={styles.error}>
 						{roles.isError && roles.error.message}
+						{findById.isError && findById.error.message}
 					</div>
 				</footer>
 			</div>
