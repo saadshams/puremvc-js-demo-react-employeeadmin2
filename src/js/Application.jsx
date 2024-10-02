@@ -16,6 +16,7 @@ import {UserForm} from "./view/components/UserForm";
 import {UserRole} from "./view/components/UserRole";
 import {appStore} from "./appStore.js"
 import {User} from "./model/valueObject/User.js";
+import Counter from "./view/components/Counter.jsx";
 
 const Application = () => {
 
@@ -24,6 +25,7 @@ const Application = () => {
     return (
         <div className="fluid">
             <Provider store={appStore}>
+                <Counter />
                 <UserList user={user} setUser={setUser} />
                 <UserForm user={user} />
                 <UserRole user={user} />

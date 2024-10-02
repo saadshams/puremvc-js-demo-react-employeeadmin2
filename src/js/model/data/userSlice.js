@@ -1,5 +1,5 @@
 //
-//  userRepository.js
+//  userSlice.js
 //  PureMVC JS Demo - React EmployeeAdmin
 //
 //  Copyright(c) 2024 Saad Shams <saad.shams@puremvc.org>
@@ -7,10 +7,10 @@
 //
 
 import {createSlice} from "@reduxjs/toolkit";
-import {findAll, save, update, deleteById} from "./data/userData.js";
+import {findAll, save, update, deleteById} from "./userData.js";
 
-export const userRepository = createSlice({
-    name: "userRepository",
+export const userSlice = createSlice({
+    name: "userSlice",
     initialState: {
         list: [],
         status: "idle",
@@ -51,4 +51,4 @@ export const userRepository = createSlice({
     }
 });
 
-export default userRepository.reducer;
+export default userSlice.reducer;

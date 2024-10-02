@@ -12,7 +12,7 @@ import {User} from "../../model/valueObject/User.js";
 import {useFindAllQuery, useDeleteByIdMutation} from "../../model/service/userService.js";
 import {getConnection, save, deleteById as del} from "../../model/data/userData.js";
 import {useEffect} from "react";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 /**
  * UserList component
