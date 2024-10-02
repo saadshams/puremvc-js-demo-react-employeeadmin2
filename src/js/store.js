@@ -13,9 +13,9 @@ import {roleService} from "./model/service/roleService.js";
 
 export const store = configureStore({
     reducer: {
-        "userRepository": userRepository,
-        "userService": userService.reducer,
-        "roleService": roleService.reducer,
+        [userRepository.name]: userRepository,
+        [userService.reducerPath]: userService.reducer,
+        [roleService.reducerPath]: roleService.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()

@@ -9,7 +9,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {findAll, save, update, deleteById} from "./data/userData.js";
 
-const userRepository = createSlice({
+export const userRepository = createSlice({
     name: "userRepository",
     initialState: {
         list: [],
