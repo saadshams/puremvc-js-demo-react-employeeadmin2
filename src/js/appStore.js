@@ -7,13 +7,11 @@
 //
 
 import {configureStore} from "@reduxjs/toolkit";
-import userRepository from "./model/userRepository.js";
 import {userService} from "./model/service/userService.js";
 import {roleService} from "./model/service/roleService.js";
 
 export const appStore = configureStore({
     reducer: {
-        [userRepository.name]: userRepository,
         [userService.reducerPath]: userService.reducer,
         [roleService.reducerPath]: roleService.reducer,
     },
