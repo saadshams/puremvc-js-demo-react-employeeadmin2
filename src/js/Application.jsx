@@ -14,7 +14,7 @@ import {useState} from "react";
 import {UserList} from "./view/components/UserList";
 import {UserForm} from "./view/components/UserForm";
 import {UserRole} from "./view/components/UserRole";
-import {store} from "./store.js"
+import {appStore} from "./appStore.js"
 import {User} from "./model/valueObject/User.js";
 
 const Application = () => {
@@ -23,7 +23,7 @@ const Application = () => {
 
     return (
         <div className="fluid">
-            <Provider store={store}>
+            <Provider store={appStore}>
                 <UserList user={user} setUser={setUser} />
                 <UserForm user={user} />
                 <UserRole user={user} />

@@ -1,5 +1,5 @@
 //
-//  store.js
+//  appStore.js
 //  PureMVC JS Demo - React EmployeeAdmin
 //
 //  Copyright(c) 2024 Saad Shams <saad.shams@puremvc.org>
@@ -11,7 +11,7 @@ import userRepository from "./model/userRepository.js";
 import {userService} from "./model/service/userService.js";
 import {roleService} from "./model/service/roleService.js";
 
-export const store = configureStore({
+export const appStore = configureStore({
     reducer: {
         [userRepository.name]: userRepository,
         [userService.reducerPath]: userService.reducer,
