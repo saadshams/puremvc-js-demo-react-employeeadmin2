@@ -14,7 +14,7 @@ import {useState} from "react";
 import {UserList} from "./view/components/UserList";
 import {UserForm} from "./view/components/UserForm";
 import {UserRole} from "./view/components/UserRole";
-import {store} from "./model/store.js"
+import {store} from "./store.js"
 import {User} from "./model/valueObject/User.js";
 
 const Application = () => {

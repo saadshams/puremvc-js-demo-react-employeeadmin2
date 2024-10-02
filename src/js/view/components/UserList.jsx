@@ -10,6 +10,9 @@ import styles from "../../../css/list.module.css"
 import PropTypes from "prop-types";
 import {User} from "../../model/valueObject/User.js";
 import {useFindAllQuery, useDeleteByIdMutation} from "../../model/service/userService.js";
+import {getConnection, save, deleteById as del} from "../../model/data/userData.js";
+import {useEffect} from "react";
+import {useDispatch} from "react-redux";
 
 /**
  * UserList component
@@ -23,6 +26,24 @@ export const UserList = ({user, setUser}) => {
 
     const users= useFindAllQuery(); // User Data
     const [deleteById, deleteStatus] = useDeleteByIdMutation(); // Actions
+
+    const dispatch = useDispatch();
+    // const users = useSelector((state) => state.users.list);
+    // const userStatus = useSelector((state) => state.users.status);
+    // const error = useSelector((state) => state.users.error);
+
+    useEffect(() => {
+        (async () => {
+            const database = await getConnection();
+            const larry = {id: 1, username: "lstooge", first: "Larry", last: "Stooge", email: "larry@stooges.com", password: "ijk456", department: 1};
+            const curly = {id: 2, username: "cstooge", first: "Curly", last: "Stooge", email: "curly@stooges.com", password: "xyz987", department: 2};
+            const moe = {id: 3, username: "mstooge", first: "Moe", last: "Stooge", email: "moe@stooges.com", password: "abc123", department: 3};
+            dispatch(save({database, user: larry}));
+            dispatch(save({database, user: curly}));
+            dispatch(save({database, user: moe}));
+            // dispatch(del({database, id: 3}));
+        })();
+    }, [dispatch]);
 
     const onNew = () => {
         setUser(User.create());

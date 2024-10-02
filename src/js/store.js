@@ -7,13 +7,15 @@
 //
 
 import {configureStore} from "@reduxjs/toolkit";
-import {userService} from "./service/userService.js";
-import {roleService} from "./service/roleService.js";
+import userRepository from "./model/userRepository.js";
+import {userService} from "./model/service/userService.js";
+import {roleService} from "./model/service/roleService.js";
 
 export const store = configureStore({
     reducer: {
-        [userService.reducerPath]: userService.reducer,
-        [roleService.reducerPath]: roleService.reducer,
+        "userRepository": userRepository,
+        "userService": userService.reducer,
+        "roleService": roleService.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()
