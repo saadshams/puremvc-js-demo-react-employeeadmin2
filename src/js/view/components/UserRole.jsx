@@ -7,10 +7,13 @@
 //
 
 import styles from "../../../css/role.module.css"
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import PropTypes from "prop-types";
-import {useFindAllQuery, useFindByIdQuery, useUpdateByIdMutation} from "../../model/service/roleService.js";
 import {Role} from "../../model/valueObject/Role";
+import {ApplicationConstants} from "../../ApplicationConstants.js";
+import {getConnection} from "../../model/connections/database.js";
+import {findAll} from "../../model/data/roleData.js";
 
 /**
  * UserRole component
@@ -21,25 +24,37 @@ import {Role} from "../../model/valueObject/Role";
  */
 export const UserRole = ({user}) => {
 
-	const roles = useFindAllQuery(); // Application Data
-	const findById = useFindByIdQuery(user); // User Data
+	const dispatch = useDispatch();
+	const findAllSelector = useSelector(state => state.roleSlice.findAll);
+
+	// const roles = useFindAllQuery(); // Application Data
+	// const findById = useFindByIdQuery(user); // User Data
 	const [formData, setFormData] = useState(Role.NONE_SELECTED); // Form Data
 
-	const [update] = useUpdateByIdMutation(); // Actions
+	// const [update] = useUpdateByIdMutation(); // Actions
+
+	useEffect(() => {
+		(async () => {
+			if(findAllSelector.status === ApplicationConstants.IDLE) {
+				const database = await getConnection();
+				dispatch(findAll({database}));
+			}
+		})();
+	}, [dispatch])
 
 	const onChange = (event) => {
-		setFormData(roles.data.find(r => r.id === parseInt(event.target.value)));
+		// setFormData(roles.data.find(r => r.id === parseInt(event.target.value)));
 	}
 
 	const onAdd = async () => {
-		const data = [...findById.data, roles.data.find(r => r.id === formData.id)];
-		await update({id: user.id, roles: data}).unwrap();
+		// const data = [...findById.data, roles.data.find(r => r.id === formData.id)];
+		// await update({id: user.id, roles: data}).unwrap();
 		reset();
 	};
 
 	const onRemove = async () => {
-		const data = findById.data.filter(r => r.id !== formData.id);
-		await update({id: user.id, roles: data}).unwrap();
+		// const data = findById.data.filter(r => r.id !== formData.id);
+		// await update({id: user.id, roles: data}).unwrap();
 		reset();
 	};
 
@@ -55,7 +70,7 @@ export const UserRole = ({user}) => {
 				</header>
 				<main>
 					<ul>
-						{findById.data && findById.data.map(r => (
+						{findAllSelector.status === ApplicationConstants.SUCCEEDED && findAllSelector.data.map(r => (
 							<li key={`role_${r.id}`}>{r.name}</li>
 						))}
 					</ul>
@@ -64,17 +79,19 @@ export const UserRole = ({user}) => {
 					<label htmlFor="roles"></label>
 					<select id="roles" value={formData.id} onChange={onChange}>
 						<option value={Role.NONE_SELECTED.id}>{Role.NONE_SELECTED.name}</option>
-						{roles.isSuccess && roles.data.map(r => (
-							<option key={`role_option${r.id}`} value={r.id}>{r.name}</option>
+						{findAllSelector.status === ApplicationConstants.SUCCEEDED && findAllSelector.data.map(role => (
+							<option key={`role_option${role.id}`} value={role.id}>{role.name}</option>
 						))}
 					</select>
+
 					<button id="add" className="primary" onClick={() => onAdd()}
 					        disabled={formData === Role.NONE_SELECTED}>Add</button>
 					<button id="remove" className="outline-primary" onClick={() => onRemove()}
 					        disabled={formData === Role.NONE_SELECTED}>Remove</button>
+
 					<div className={styles.error}>
-						{roles.isError && roles.error.message}
-						{findById.isError && findById.error.message}
+						{findAllSelector.status === ApplicationConstants.FAILED && findAllSelector.error.message}
+						{/*{findById.isError && findById.error.message}*/}
 					</div>
 				</footer>
 			</div>

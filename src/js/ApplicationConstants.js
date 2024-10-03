@@ -13,4 +13,5 @@ export class ApplicationConstants {
     static FAILED = "failed";
 
     static API_URL = "http://127.0.0.1";
+    static DATABASE = "employeeadmin";
 }

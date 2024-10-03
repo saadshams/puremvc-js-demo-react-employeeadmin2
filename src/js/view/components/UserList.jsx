@@ -1,5 +1,5 @@
 //
-//  UserList.jsx
+//  Userdata.jsx
 //  PureMVC JS Demo - React EmployeeAdmin
 //
 //  Copyright(c) 2024 Saad Shams <saad.shams@puremvc.org>
@@ -9,7 +9,8 @@
 import styles from "../../../css/list.module.css"
 import {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {getConnection, findAll, deleteById} from "../../model/data/userData.js";
+import {getConnection} from "../../model/connections/database.js";
+import {findAll, deleteById} from "../../model/data/userData.js";
 import PropTypes from "prop-types";
 import {ApplicationConstants} from "../../ApplicationConstants.js";
 import {User} from "../../model/valueObject/User.js";
@@ -25,16 +26,17 @@ import {User} from "../../model/valueObject/User.js";
 export const UserList = ({user, setUser}) => {
 
     const dispatch = useDispatch();
-    const {users, status, error} = useSelector((state) => state.userData);
+    const findAllSelector = useSelector(state => state.userSlice.findAll);
+    const deleteByIdSelector = useSelector(state => state.userSlice.deleteById);
 
     useEffect(() => {
         (async () => {
-            if (status === ApplicationConstants.IDLE) {
+            if (findAllSelector.status === ApplicationConstants.IDLE) {
                 const database = await getConnection();
                 dispatch(findAll({database}));
             }
         })();
-    }, [dispatch, status]);
+    }, [dispatch, findAllSelector]);
 
     const onNew = () => {
         setUser(User.create());
@@ -54,7 +56,7 @@ export const UserList = ({user, setUser}) => {
         <section id="list">
             <div className={styles.list}>
                 <header>
-                    <h2>User List</h2>
+                    <h2>User data</h2>
                 </header>
                 <main>
                     <ul>
@@ -67,20 +69,20 @@ export const UserList = ({user, setUser}) => {
                             <span>Password</span>
                             <span>Department</span>
                         </li>
-                        {status === "succeeded" && users.map(u => (
-                            <li key={`user_${u.id}`}>
-                                <input type="radio" id={`users_radio${u.id}`} name="users" value={u.id}
-                                       onChange={() => onSelect(u)}
-                                       checked={user.id === u.id}/>
+                        {findAllSelector.status === ApplicationConstants.SUCCEEDED && findAllSelector.data.map(user => (
+                            <li key={`user_${user.id}`}>
+                                <input type="radio" id={`users_radio${user.id}`} name="users" value={user.id}
+                                       onChange={() => onSelect(user)}
+                                       checked={user.id === user.id}/>
 
-                                <label htmlFor={`users_radio${u.id}`}>
-                                    <span>{u.last}, {u.first}</span>
-                                    <span>{u.username}</span>
-                                    <span>{u.first}</span>
-                                    <span>{u.last}</span>
-                                    <span>{u.email}</span>
-                                    <span>{u.password}</span>
-                                    <span>{u.department.name}</span>
+                                <label htmlFor={`users_radio${user.id}`}>
+                                    <span>{user.last}, {user.first}</span>
+                                    <span>{user.username}</span>
+                                    <span>{user.first}</span>
+                                    <span>{user.last}</span>
+                                    <span>{user.email}</span>
+                                    <span>{user.password}</span>
+                                    <span>{user.department.name}</span>
                                 </label>
                             </li>
                         ))}
@@ -88,8 +90,8 @@ export const UserList = ({user, setUser}) => {
                 </main>
                 <footer>
                     <div className={styles.error}>
-                        {error && error.message}
-                        {/*{deleteStatus.error && deleteStatus.error.message}*/}
+                        {findAllSelector.error && findAllSelector.error.message}
+                        {deleteByIdSelector.error && deleteByIdSelector.error.message}
                     </div>
                     <button id="add" className="primary" onClick={() => onNew()}>Add</button>
                     <button id="delete" className="outline-primary" onClick={() => onDelete(user)}

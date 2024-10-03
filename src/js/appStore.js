@@ -7,13 +7,15 @@
 //
 
 import {configureStore} from "@reduxjs/toolkit";
-import userData from "./model/data/userData.js";
+import userSlice from "./model/data/userSlice.js";
+import roleSlice from "./model/data/roleSlice.js";
 import {userService} from "./model/service/userService.js";
 import {roleService} from "./model/service/roleService.js";
 
 export const appStore = configureStore({
     reducer: {
-        userData: userData,
+        userSlice: userSlice,
+        roleSlice: roleSlice,
         [userService.reducerPath]: userService.reducer,
         [roleService.reducerPath]: roleService.reducer,
     },
