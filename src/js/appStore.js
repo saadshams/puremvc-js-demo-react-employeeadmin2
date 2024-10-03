@@ -7,15 +7,13 @@
 //
 
 import {configureStore} from "@reduxjs/toolkit";
-import userRepository from "./model/data/userSlice.js";
+import userData from "./model/data/userData.js";
 import {userService} from "./model/service/userService.js";
 import {roleService} from "./model/service/roleService.js";
-import counterRepository from "./model/data/counterData.js";
 
 export const appStore = configureStore({
     reducer: {
-        counterRepository: counterRepository,
-        [userRepository.name]: userRepository,
+        userData: userData,
         [userService.reducerPath]: userService.reducer,
         [roleService.reducerPath]: roleService.reducer,
     },

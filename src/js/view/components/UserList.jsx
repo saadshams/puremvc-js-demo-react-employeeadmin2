@@ -7,12 +7,12 @@
 //
 
 import styles from "../../../css/list.module.css"
-import PropTypes from "prop-types";
-import {User} from "../../model/valueObject/User.js";
-import {useFindAllQuery, useDeleteByIdMutation} from "../../model/service/userService.js";
-import {getConnection, save, deleteById as del} from "../../model/data/userData.js";
 import {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
+import {getConnection, findAll, deleteById} from "../../model/data/userData.js";
+import PropTypes from "prop-types";
+import {ApplicationConstants} from "../../ApplicationConstants.js";
+import {User} from "../../model/valueObject/User.js";
 
 /**
  * UserList component
@@ -24,26 +24,17 @@ import {useDispatch, useSelector} from "react-redux";
  */
 export const UserList = ({user, setUser}) => {
 
-    const users= useFindAllQuery(); // User Data
-    const [deleteById, deleteStatus] = useDeleteByIdMutation(); // Actions
-
     const dispatch = useDispatch();
-    // const users = useSelector((state) => state.users.list);
-    // const userStatus = useSelector((state) => state.users.status);
-    // const error = useSelector((state) => state.users.error);
+    const {users, status, error} = useSelector((state) => state.userData);
 
     useEffect(() => {
         (async () => {
-            const database = await getConnection();
-            const larry = {id: 1, username: "lstooge", first: "Larry", last: "Stooge", email: "larry@stooges.com", password: "ijk456", department: 1};
-            const curly = {id: 2, username: "cstooge", first: "Curly", last: "Stooge", email: "curly@stooges.com", password: "xyz987", department: 2};
-            const moe = {id: 3, username: "mstooge", first: "Moe", last: "Stooge", email: "moe@stooges.com", password: "abc123", department: 3};
-            dispatch(save({database, user: larry}));
-            dispatch(save({database, user: curly}));
-            dispatch(save({database, user: moe}));
-            // dispatch(del({database, id: 3}));
+            if (status === ApplicationConstants.IDLE) {
+                const database = await getConnection();
+                dispatch(findAll({database}));
+            }
         })();
-    }, [dispatch]);
+    }, [dispatch, status]);
 
     const onNew = () => {
         setUser(User.create());
@@ -54,7 +45,8 @@ export const UserList = ({user, setUser}) => {
     }
 
     const onDelete = async (user) => {
-        await deleteById(user).unwrap();
+        const database = await getConnection();
+        dispatch(deleteById({database, id: user.id}));
         setUser(User.create());
     }
 
@@ -75,7 +67,7 @@ export const UserList = ({user, setUser}) => {
                             <span>Password</span>
                             <span>Department</span>
                         </li>
-                        {users.isSuccess && users.data.map(u => (
+                        {status === "succeeded" && users.map(u => (
                             <li key={`user_${u.id}`}>
                                 <input type="radio" id={`users_radio${u.id}`} name="users" value={u.id}
                                        onChange={() => onSelect(u)}
@@ -96,8 +88,8 @@ export const UserList = ({user, setUser}) => {
                 </main>
                 <footer>
                     <div className={styles.error}>
-                        {users.isError && users.error.message}
-                        {deleteStatus.error && deleteStatus.error.message}
+                        {error && error.message}
+                        {/*{deleteStatus.error && deleteStatus.error.message}*/}
                     </div>
                     <button id="add" className="primary" onClick={() => onNew()}>Add</button>
                     <button id="delete" className="outline-primary" onClick={() => onDelete(user)}

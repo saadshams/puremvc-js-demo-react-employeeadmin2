@@ -7,5 +7,10 @@
 //
 
 export class ApplicationConstants {
+    static IDLE = "idle";
+    static LOADING = "loading";
+    static SUCCEEDED = "succeeded";
+    static FAILED = "failed";
+
     static API_URL = "http://127.0.0.1";
 }
