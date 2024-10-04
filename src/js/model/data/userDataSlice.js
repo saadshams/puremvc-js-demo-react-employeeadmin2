@@ -1,5 +1,5 @@
 //
-//  userSlice.js
+//  userDataSlice.js
 //  PureMVC JS Demo - React EmployeeAdmin
 //
 //  Copyright(c) 2024 Saad Shams <saad.shams@puremvc.org>
@@ -10,15 +10,15 @@ import {createSlice} from "@reduxjs/toolkit";
 import {ApplicationConstants} from "../../ApplicationConstants.js";
 import {findAll, findById, save, saveDepartment, update, deleteById} from "./userData.js";
 
-const userSlice = createSlice({
-    name: "userSlice",
+const userDataSlice = createSlice({
+    name: "userDataSlice",
     initialState: {
         findAll: { data: [], status: ApplicationConstants.IDLE, error: null },
         findById: { data: {}, status: ApplicationConstants.IDLE, error: null },
         save: { status: ApplicationConstants.IDLE, error: null },
         update: { status: ApplicationConstants.IDLE, error: null },
         deleteById: { status: ApplicationConstants.IDLE, error: null },
-        departments: { data: [], status: ApplicationConstants.IDLE, error: null },
+        findAllDepartments: { data: [], status: ApplicationConstants.IDLE, error: null },
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -90,17 +90,17 @@ const userSlice = createSlice({
 
         builder
             .addCase(saveDepartment.pending, state => {
-                state.departments.status = ApplicationConstants.LOADING;
+                state.findAllDepartments.status = ApplicationConstants.LOADING;
             })
             .addCase(saveDepartment.fulfilled, (state, action) => {
-                state.departments.status = ApplicationConstants.SUCCEEDED;
-                state.departments.data.push(action.payload);
+                state.findAllDepartments.status = ApplicationConstants.SUCCEEDED;
+                state.findAllDepartments.data.push(action.payload);
             })
             .addCase(saveDepartment.rejected, (state, action) => {
-                state.departments.status = ApplicationConstants.FAILED;
-                state.departments.error = action.error.message;
+                state.findAllDepartments.status = ApplicationConstants.FAILED;
+                state.findAllDepartments.error = action.error.message;
             });
     }
 });
 
-export default userSlice.reducer;
+export default userDataSlice.reducer;

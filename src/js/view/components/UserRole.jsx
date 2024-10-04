@@ -25,7 +25,7 @@ import {findAll} from "../../model/data/roleData.js";
 export const UserRole = ({user}) => {
 
 	const dispatch = useDispatch();
-	const findAllSelector = useSelector(state => state.roleSlice.findAll);
+	const findAllSelector = useSelector(state => state.roleDataSlice.findAll);
 
 	// const roles = useFindAllQuery(); // Application Data
 	// const findById = useFindByIdQuery(user); // User Data

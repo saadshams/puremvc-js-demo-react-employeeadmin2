@@ -9,8 +9,8 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import Application from "./Application.jsx";
-import {appStore} from "./appStore.js";
 import {Provider} from "react-redux";
+import {appStore} from "./appStore.js";
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>

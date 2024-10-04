@@ -1,5 +1,5 @@
 //
-//  roleSlice.js
+//  roleDataSlice.js
 //  PureMVC JS Demo - React EmployeeAdmin
 //
 //  Copyright(c) 2024 Saad Shams <saad.shams@puremvc.org>
@@ -10,10 +10,10 @@ import {createSlice} from "@reduxjs/toolkit";
 import {ApplicationConstants} from "../../ApplicationConstants.js";
 import {findAll, save} from "./roleData.js";
 
-const roleSlice = createSlice({
-    name: "roleSlice",
+const roleDataSlice = createSlice({
+    name: "roleDataSlice",
     initialState: {
-        findAll: {data: [], status: ApplicationConstants.IDLE, error: null},
+        findAll: { data: [], status: ApplicationConstants.IDLE, error: null },
         save: { status: ApplicationConstants.IDLE, error: null },
     },
     reducers: {},
@@ -46,4 +46,4 @@ const roleSlice = createSlice({
     }
 });
 
-export default roleSlice.reducer;
+export default roleDataSlice.reducer;

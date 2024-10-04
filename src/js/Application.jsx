@@ -22,8 +22,10 @@ const Application = () => {
     const [user, setUser] = useState(User.create()); // Shared Data
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        new StartupUseCase(dispatch).execute();
+    useEffect( () => {
+        (async () => {
+            await new StartupUseCase(dispatch).execute();
+        })();
     }, [dispatch]);
 
     return (

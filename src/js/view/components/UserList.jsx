@@ -26,8 +26,8 @@ import {User} from "../../model/valueObject/User.js";
 export const UserList = ({user, setUser}) => {
 
     const dispatch = useDispatch();
-    const findAllSelector = useSelector(state => state.userSlice.findAll);
-    const deleteByIdSelector = useSelector(state => state.userSlice.deleteById);
+    const findAllSelector = useSelector(state => state.userDataSlice.findAll);
+    const deleteByIdSelector = useSelector(state => state.userDataSlice.deleteById);
 
     useEffect(() => {
         (async () => {
@@ -69,20 +69,20 @@ export const UserList = ({user, setUser}) => {
                             <span>Password</span>
                             <span>Department</span>
                         </li>
-                        {findAllSelector.status === ApplicationConstants.SUCCEEDED && findAllSelector.data.map(user => (
-                            <li key={`user_${user.id}`}>
-                                <input type="radio" id={`users_radio${user.id}`} name="users" value={user.id}
-                                       onChange={() => onSelect(user)}
-                                       checked={user.id === user.id}/>
+                        {findAllSelector.status === ApplicationConstants.SUCCEEDED && findAllSelector.data.map(u => (
+                            <li key={`user_${u.id}`}>
+                                <input type="radio" id={`users_radio${u.id}`} name="users" value={u.id}
+                                       onChange={() => onSelect(u)}
+                                       checked={user.id === u.id}/>
 
-                                <label htmlFor={`users_radio${user.id}`}>
-                                    <span>{user.last}, {user.first}</span>
-                                    <span>{user.username}</span>
-                                    <span>{user.first}</span>
-                                    <span>{user.last}</span>
-                                    <span>{user.email}</span>
-                                    <span>{user.password}</span>
-                                    <span>{user.department.name}</span>
+                                <label htmlFor={`users_radio${u.id}`}>
+                                    <span>{u.last}, {u.first}</span>
+                                    <span>{u.username}</span>
+                                    <span>{u.first}</span>
+                                    <span>{u.last}</span>
+                                    <span>{u.email}</span>
+                                    <span>{u.password}</span>
+                                    <span>{u.department.name}</span>
                                 </label>
                             </li>
                         ))}
