@@ -6,49 +6,74 @@
 //  Your reuse is governed by the BSD 3-Clause License
 //
 
-import {getConnection} from "../model/connections/database.js";
-import {save, saveDepartment} from "../model/data/userData.js";
-import {save as saveRole} from "../model/data/roleData.js";
+import {ApplicationConstants} from "../ApplicationConstants.js";
 
 export class StartupUseCase {
 
-    constructor(dispatch) {
-        this.dispatch = dispatch;
+    execute() {
+        const request = indexedDB.open(ApplicationConstants.DATABASE, 1);
+        request.onerror = event => console.error(event.target.error);
+        // request.onsuccess = event => console.log(event.target.result);
+
+        request.onupgradeneeded = event => {
+            const database = event.target.result;
+
+            Object.keys(this.stores).forEach(key => {
+                if (database.objectStoreNames.contains(key) === false) {
+                    database.createObjectStore(key, {keyPath: "id", autoIncrement: true});
+                }
+            });
+
+            const transaction = event.target.transaction;
+            transaction.oncomplete = () => {
+                const transaction = database.transaction(Object.keys(this.stores), "readwrite");
+                Object.entries(this.stores).forEach(([key, value]) => {
+                    let store = transaction.objectStore(key);
+                    value.forEach(item => store.add(item));
+                });
+            }
+            transaction.onerror = event => console.error(event.target.error);
+        };
     }
 
-    async execute() {
-        const database = await getConnection();
+    departments = [
+        {id: 1, name: "Accounting"},
+        {id: 2, name: "Sales"},
+        {id: 3, name: "Plant"},
+        {id: 4, name: "Shipping"},
+        {id: 5, name: "Quality Control"}
+    ];
 
-        const departments = [
-            {id: 1, name: "Accounting"}, {id: 2, name: "Sales"},
-            {id: 3, name: "Plant"}, {id: 4, name: "Shipping"},
-            {id: 5, name: "Quality Control"}
-        ]
-        await Promise.all(departments.map(department => this.dispatch(saveDepartment({database, department}))));
+    roles = [
+        {id: 1, name: "Administrator"},
+        {id: 2, name: "Accounts Payable"},
+        {id: 3, name: "Accounts Receivable"},
+        {id: 4, name: "Employee Benefits"},
+        {id: 5, name: "General Ledger"},
+        {id: 6, name: "Payroll"},
+        {id: 7, name: "Inventory"},
+        {id: 8, name: "Production"},
+        {id: 9, name: "Quality Control"},
+        {id: 10, name: "Sales"},
+        {id: 11, name: "Orders"},
+        {id: 12, name: "Customers"},
+        {id: 13, name: "Shipping"},
+        {id: 14, name: "Returns"}
+    ];
 
-        const users = [
-            {id: 1, username: "lstooge", first: "Larry", last: "Stooge", email: "larry@stooges.com", password: "ijk456", department: {id: 1, name: "Accounting"}},
-            {id: 2, username: "cstooge", first: "Curly", last: "Stooge", email: "curly@stooges.com", password: "xyz987", department: {id: 2, name: "Sales"}},
-            {id: 3, username: "mstooge", first: "Moe", last: "Stooge", email: "moe@stooges.com", password: "abc123", department: {id: 3, name: "Plant"}}
-        ];
-        await Promise.all(users.map(user => this.dispatch(save({database, user}))));
+    users = [
+        {username: "lstooge", first: "Larry", last: "Stooge", email: "larry@stooges.com", password: "ijk456",
+            department: this.departments[0], roles: [this.roles[3], this.roles[5]]},
+        {username: "cstooge", first: "Curly", last: "Stooge", email: "curly@stooges.com", password: "xyz987",
+            department: this.departments[1], roles: [this.roles[1], this.roles[2]]},
+        {username: "mstooge", first: "Moe", last: "Stooge", email: "moe@stooges.com", password: "abc123",
+            department: this.departments[2], roles: [this.roles[7], this.roles[9], this.roles[12]]}
+    ];
 
-        const roles = [
-            {id: 1, name: "Administrator"},
-            {id: 2, name: "Accounts Payable"},
-            {id: 3, name: "Accounts Receivable"},
-            {id: 4, name: "Employee Benefits"},
-            {id: 5, name: "Payroll"},
-            {id: 6, name: "Inventory"},
-            {id: 7, name: "Production"},
-            {id: 8, name: "Quality Control"},
-            {id: 9, name: "Sales"},
-            {id: 10, name: "Orders"},
-            {id: 11, name: "Customers"},
-            {id: 12, name: "Shipping"},
-            {id: 13, name: "Returns"},
-        ];
-        await Promise.all(roles.map(role => this.dispatch(saveRole({database, role}))));
-    }
+    stores = {
+        "departments": this.departments,
+        "roles": this.roles,
+        "users": this.users
+    };
 
 }

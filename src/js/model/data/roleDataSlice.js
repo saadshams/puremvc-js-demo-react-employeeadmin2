@@ -8,40 +8,64 @@
 
 import {createSlice} from "@reduxjs/toolkit";
 import {ApplicationConstants} from "../../ApplicationConstants.js";
-import {findAll, save} from "./roleData.js";
+import {findAll, findById, add, remove} from "./roleData.js";
 
 const roleDataSlice = createSlice({
     name: "roleDataSlice",
     initialState: {
         findAll: { data: [], status: ApplicationConstants.IDLE, error: null },
-        save: { status: ApplicationConstants.IDLE, error: null },
+        findById: { data: [], status: ApplicationConstants.IDLE, error: null },
+        add: { data: {}, status: ApplicationConstants.IDLE, error: null },
+        remove: { data: {}, status: ApplicationConstants.IDLE, error: null },
     },
     reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(findAll.pending, state => {
-                state.findAll.status = ApplicationConstants.LOADING;
+                state.findAll = {data: [], status: ApplicationConstants.LOADING, error: null};
             })
             .addCase(findAll.fulfilled, (state, action) => {
-                state.findAll.status = ApplicationConstants.SUCCEEDED;
-                state.findAll.data = action.payload;
+                state.findAll = {data: action.payload, status: ApplicationConstants.SUCCEEDED, error: null};
             })
             .addCase(findAll.rejected, (state, action) => {
-                state.findAll.status = ApplicationConstants.FAILED;
-                state.findAll.error = action.error.message;
+                state.findAll = {data: [], status: ApplicationConstants.FAILED, error: action.error};
             });
 
         builder
-            .addCase(save.pending, state => {
-                state.save.status = ApplicationConstants.LOADING;
+            .addCase(findById.pending, state => {
+                state.findById = {data: [], status: ApplicationConstants.LOADING, error: null};
             })
-            .addCase(save.fulfilled, (state, action) => {
-                state.save.status = ApplicationConstants.SUCCEEDED;
-                state.findAll.data.push(action.payload);
+            .addCase(findById.fulfilled, (state, action) => {
+                state.findById = {data: action.payload, status: ApplicationConstants.SUCCEEDED, error: null};
             })
-            .addCase(save.rejected, (state, action) => {
-                state.save.status = ApplicationConstants.FAILED;
-                state.save.error = action.error.message;
+            .addCase(findById.rejected, (state, action) => {
+                state.findById = {data: [], status: ApplicationConstants.FAILED, error: action.error};
+            });
+
+        builder
+            .addCase(add.pending, state => {
+                state.add = {data: {}, status: ApplicationConstants.LOADING, error: null};
+            })
+            .addCase(add.fulfilled, (state, action) => {
+                const data = [...state.findById.data, action.payload];
+                state.findById = {data, status: ApplicationConstants.SUCCEEDED, error: null};
+                state.add = {data: action.payload, status: ApplicationConstants.SUCCEEDED, error: null};
+            })
+            .addCase(add.rejected, (state, action) => {
+                state.add = {data: {}, status: ApplicationConstants.FAILED, error: action.error};
+            });
+
+        builder
+            .addCase(remove.pending, state => {
+                state.add = {data: {}, status: ApplicationConstants.LOADING, error: null};
+            })
+            .addCase(remove.fulfilled, (state, action) => {
+                const data = state.findById.data.filter(role => role.id !== action.payload.id);
+                state.findById = {data, status: ApplicationConstants.SUCCEEDED, error: null};
+                state.add = {data: action.payload, status: ApplicationConstants.SUCCEEDED, error: null};
+            })
+            .addCase(remove.rejected, (state, action) => {
+                state.add = {data: {}, status: ApplicationConstants.FAILED, error: action.error};
             });
     }
 });

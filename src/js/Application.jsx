@@ -9,30 +9,27 @@
 import "../css/_base.css"
 import "../css/_layout.css";
 import "../css/_theme.css"
-import {useDispatch} from "react-redux";
-import {useEffect, useState} from "react";
+import {useState} from "react";
+import {Provider} from "react-redux";
 import {UserList} from "./view/components/UserList";
 import {UserForm} from "./view/components/UserForm";
 import {UserRole} from "./view/components/UserRole";
-import {User} from "./model/valueObject/User.js";
 import {StartupUseCase} from "./controller/StartupUseCase.js";
+import {appStore} from "./appStore.js";
 
 const Application = () => {
 
-    const [user, setUser] = useState(User.create()); // Shared Data
-    const dispatch = useDispatch();
+    new StartupUseCase().execute();
 
-    useEffect( () => {
-        (async () => {
-            await new StartupUseCase(dispatch).execute();
-        })();
-    }, [dispatch]);
+    const [user, setUser] = useState({}); // Shared Data
 
     return (
         <div className="fluid">
-            <UserList user={user} setUser={setUser} />
-            <UserForm user={user} />
-            <UserRole user={user} />
+            <Provider store={appStore}>
+                <UserList user={user} setUser={setUser} />
+                <UserForm user={user} setUser={setUser} />
+                <UserRole user={user} />
+            </Provider>
         </div>
     );
 

@@ -1,5 +1,5 @@
 //
-//  Userdata.jsx
+//  UserList.jsx
 //  PureMVC JS Demo - React EmployeeAdmin
 //
 //  Copyright(c) 2024 Saad Shams <saad.shams@puremvc.org>
@@ -10,18 +10,17 @@ import styles from "../../../css/list.module.css"
 import {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {getConnection} from "../../model/connections/database.js";
-import {findAll, deleteById} from "../../model/data/userData.js";
+import {create, findAll, deleteById} from "../../model/data/userData.js";
 import PropTypes from "prop-types";
 import {ApplicationConstants} from "../../ApplicationConstants.js";
-import {User} from "../../model/valueObject/User.js";
 
 /**
  * UserList component
  *
- * @param {Object} props - The component props
- * @param {User} props.user - The user object
- * @param {function} props.setUser - Function to set the user
- * @returns {JSX.Element} The rendered component
+ * @param {Object} props
+ * @param {User} props.user
+ * @param {function} props.setUser
+ * @returns {JSX.Element}
  */
 export const UserList = ({user, setUser}) => {
 
@@ -32,14 +31,13 @@ export const UserList = ({user, setUser}) => {
     useEffect(() => {
         (async () => {
             if (findAllSelector.status === ApplicationConstants.IDLE) {
-                const database = await getConnection();
-                dispatch(findAll({database}));
+                dispatch(findAll({database: await getConnection()}));
             }
         })();
     }, [dispatch, findAllSelector]);
 
     const onNew = () => {
-        setUser(User.create());
+        setUser(create());
     }
 
     const onSelect = (user) => {
@@ -49,7 +47,7 @@ export const UserList = ({user, setUser}) => {
     const onDelete = async (user) => {
         const database = await getConnection();
         dispatch(deleteById({database, id: user.id}));
-        setUser(User.create());
+        setUser(create());
     }
 
     return (
@@ -95,7 +93,7 @@ export const UserList = ({user, setUser}) => {
                     </div>
                     <button id="add" className="primary" onClick={() => onNew()}>Add</button>
                     <button id="delete" className="outline-primary" onClick={() => onDelete(user)}
-                            disabled={user.id === 0}>Delete</button>
+                            disabled={user.id === undefined}>Delete</button>
                 </footer>
             </div>
         </section>

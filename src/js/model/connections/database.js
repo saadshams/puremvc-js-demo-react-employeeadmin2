@@ -8,23 +8,19 @@
 
 import {ApplicationConstants} from "../../ApplicationConstants.js";
 
+let connection = null;
+
 /** @returns {Promise<IDBDatabase>} */
 export const getConnection = () => {
+    if (connection)
+        return Promise.resolve(connection);
+
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(ApplicationConstants.DATABASE, 1);
-        request.onupgradeneeded = event => {
-            const database = event.target.result;
-            if(database.objectStoreNames.contains("users") === false) {
-                database.createObjectStore("users", {keyPath: "id", autoIncrement: true});
-            }
-            if(database.objectStoreNames.contains("departments") === false) {
-                database.createObjectStore("departments", {keyPath: "id", autoIncrement: true});
-            }
-            if(database.objectStoreNames.contains("roles") === false) {
-                database.createObjectStore("roles", {keyPath: "id", autoIncrement: true});
-            }
-        };
         request.onerror = event => reject(event.target.error);
-        request.onsuccess = event => resolve(event.target.result);
+        request.onsuccess = event => {
+            connection = event.target.result;
+            resolve(connection);
+        };
     });
 }

@@ -10,10 +10,9 @@ import styles from "../../../css/role.module.css"
 import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import PropTypes from "prop-types";
-import {Role} from "../../model/valueObject/Role";
 import {ApplicationConstants} from "../../ApplicationConstants.js";
 import {getConnection} from "../../model/connections/database.js";
-import {findAll} from "../../model/data/roleData.js";
+import {findAll, findById, add, remove} from "../../model/data/roleData.js";
 
 /**
  * UserRole component
@@ -24,42 +23,49 @@ import {findAll} from "../../model/data/roleData.js";
  */
 export const UserRole = ({user}) => {
 
+	const NONE_SELECTED = {id: 0, name: "---None Selected---"};
+
 	const dispatch = useDispatch();
-	const findAllSelector = useSelector(state => state.roleDataSlice.findAll);
-
-	// const roles = useFindAllQuery(); // Application Data
-	// const findById = useFindByIdQuery(user); // User Data
-	const [formData, setFormData] = useState(Role.NONE_SELECTED); // Form Data
-
-	// const [update] = useUpdateByIdMutation(); // Actions
+	const findAllSelector = useSelector(state => state.roleDataSlice.findAll); // Application Data
+	const findByIdSelector = useSelector(state => state.roleDataSlice.findById); // User Data
+	const addSelector = useSelector(state => state.roleDataSlice.add); // Action Data
+	const removeSelector = useSelector(state => state.roleDataSlice.remove);
+	const [formData, setFormData] = useState(NONE_SELECTED); // Form Data
 
 	useEffect(() => {
 		(async () => {
 			if(findAllSelector.status === ApplicationConstants.IDLE) {
-				const database = await getConnection();
-				dispatch(findAll({database}));
+				dispatch(findAll({database: await getConnection()}));
+			} else if (findAllSelector.status === ApplicationConstants.SUCCEEDED) {
+				if (user.id)
+					dispatch(findById({database: await getConnection(), id: user.id}));
 			}
 		})();
-	}, [dispatch])
+	}, [dispatch, findAllSelector.status, user.id]);
+
+	useEffect(() => {
+		(async () => {
+			if (addSelector.status === ApplicationConstants.SUCCEEDED ||
+				removeSelector.status === ApplicationConstants.SUCCEEDED) {
+				reset();
+			}
+		})();
+	}, [findByIdSelector.status]);
 
 	const onChange = (event) => {
-		// setFormData(roles.data.find(r => r.id === parseInt(event.target.value)));
+		setFormData(findAllSelector.data.find(role => role.id === parseInt(event.target.value)));
 	}
 
 	const onAdd = async () => {
-		// const data = [...findById.data, roles.data.find(r => r.id === formData.id)];
-		// await update({id: user.id, roles: data}).unwrap();
-		reset();
+		dispatch(add({database: await getConnection(), id: user.id, role: formData}))
 	};
 
 	const onRemove = async () => {
-		// const data = findById.data.filter(r => r.id !== formData.id);
-		// await update({id: user.id, roles: data}).unwrap();
-		reset();
+		dispatch(remove({database: await getConnection(), id: user.id, role: formData}))
 	};
 
 	const reset = () => {
-		setFormData(Role.NONE_SELECTED);
+		setFormData(NONE_SELECTED);
 	}
 
 	return (
@@ -70,28 +76,30 @@ export const UserRole = ({user}) => {
 				</header>
 				<main>
 					<ul>
-						{findAllSelector.status === ApplicationConstants.SUCCEEDED && findAllSelector.data.map(r => (
-							<li key={`role_${r.id}`}>{r.name}</li>
+						{findByIdSelector.status === ApplicationConstants.SUCCEEDED && findByIdSelector.data.map(role => (
+							<li key={`role_${role.id}`}>{role.name}</li>
 						))}
 					</ul>
 				</main>
 				<footer>
 					<label htmlFor="roles"></label>
 					<select id="roles" value={formData.id} onChange={onChange}>
-						<option value={Role.NONE_SELECTED.id}>{Role.NONE_SELECTED.name}</option>
+						<option value={NONE_SELECTED.id}>{NONE_SELECTED.name}</option>
 						{findAllSelector.status === ApplicationConstants.SUCCEEDED && findAllSelector.data.map(role => (
 							<option key={`role_option${role.id}`} value={role.id}>{role.name}</option>
 						))}
 					</select>
 
 					<button id="add" className="primary" onClick={() => onAdd()}
-					        disabled={formData === Role.NONE_SELECTED}>Add</button>
+					        disabled={formData.id === NONE_SELECTED.id}>Add</button>
 					<button id="remove" className="outline-primary" onClick={() => onRemove()}
-					        disabled={formData === Role.NONE_SELECTED}>Remove</button>
+					        disabled={formData.id === NONE_SELECTED.id}>Remove</button>
 
 					<div className={styles.error}>
 						{findAllSelector.status === ApplicationConstants.FAILED && findAllSelector.error.message}
-						{/*{findById.isError && findById.error.message}*/}
+						{findByIdSelector.status === ApplicationConstants.FAILED && findByIdSelector.error.message}
+						{addSelector.status === ApplicationConstants.FAILED && addSelector.error.message}
+						{removeSelector.status === ApplicationConstants.FAILED && removeSelector.error.message}
 					</div>
 				</footer>
 			</div>

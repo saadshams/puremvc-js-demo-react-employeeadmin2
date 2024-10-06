@@ -8,7 +8,7 @@
 
 import {createSlice} from "@reduxjs/toolkit";
 import {ApplicationConstants} from "../../ApplicationConstants.js";
-import {findAll, findById, save, saveDepartment, update, deleteById} from "./userData.js";
+import {deleteById, findAll, findAllDepartments, findById, save, update} from "./userData.js";
 
 const userDataSlice = createSlice({
     name: "userDataSlice",
@@ -24,81 +24,74 @@ const userDataSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(findAll.pending, state => {
-                state.findAll.status = ApplicationConstants.LOADING;
+                state.findAll = {data: [], status: ApplicationConstants.LOADING, error: null};
             })
             .addCase(findAll.fulfilled, (state, action) => {
-                state.findAll.status = ApplicationConstants.SUCCEEDED;
-                state.findAll.data = action.payload;
+                state.findAll = {data: action.payload, status: ApplicationConstants.SUCCEEDED, error: null};
             })
             .addCase(findAll.rejected, (state, action) => {
-                state.findAll.status = ApplicationConstants.FAILED;
-                state.findAll.error = action.error.message;
+                state.findAll = {data: [], status: ApplicationConstants.FAILED, error: action.error};
             });
 
         builder
             .addCase(findById.pending, state => {
-                state.findById.status = ApplicationConstants.LOADING;
+                state.findById = {data: {}, status: ApplicationConstants.LOADING, error: null};
             })
             .addCase(findById.fulfilled, (state, action) => {
-                state.findById.status = ApplicationConstants.SUCCEEDED;
-                state.findById.user = action.payload;
+                state.findById = {data: action.payload, status: ApplicationConstants.SUCCEEDED, error: null};
             })
             .addCase(findById.rejected, (state, action) => {
-                state.findById.status = ApplicationConstants.FAILED;
-                state.findById.error = action.error.message;
+                state.findById = {data: {}, status: ApplicationConstants.FAILED, error: action.error};
             });
 
         builder
             .addCase(save.pending, state => {
-                state.save.status = ApplicationConstants.LOADING;
+                state.save = {data: {}, status: ApplicationConstants.LOADING, error: null};
             })
             .addCase(save.fulfilled, (state, action) => {
-                state.save.status = ApplicationConstants.SUCCEEDED;
-                state.findAll.data.push(action.payload);
+                const data = [...state.findAll.data, action.payload];
+                state.findAll = {data, status: ApplicationConstants.SUCCEEDED, error: null};
+                state.save = {data: action.payload, status: ApplicationConstants.SUCCEEDED, error: null};
             })
             .addCase(save.rejected, (state, action) => {
-                state.save.status = ApplicationConstants.FAILED;
-                state.save.error = action.error.message;
+                state.save = {data: {}, status: ApplicationConstants.FAILED, error: action.error};
             });
 
         builder
             .addCase(update.pending, state => {
-                state.update.status = ApplicationConstants.LOADING;
+                state.update = {data: {}, status: ApplicationConstants.LOADING, error: null};
             })
             .addCase(update.fulfilled, (state, action) => {
-                state.update.status = ApplicationConstants.SUCCEEDED;
-                const index = state.findAll.data.findIndex(user => user.id === action.payload.id);
-                if (index !== -1) state.findAll.data[index] = action.payload;
+                const data = state.findAll.data.map(user => user.id === action.payload.id ? action.payload : user);
+                state.findAll = {data, status: ApplicationConstants.SUCCEEDED, error: null};
+                state.update = {data: action.payload, status: ApplicationConstants.SUCCEEDED, error: null};
             })
             .addCase(update.rejected, (state, action) => {
-                state.update.status = ApplicationConstants.FAILED;
-                state.update.error = action.error.message;
+                state.update = {data: {}, status: ApplicationConstants.FAILED, error: action.error};
             });
 
         builder
             .addCase(deleteById.pending, state => {
-                state.deleteById.status = ApplicationConstants.LOADING;
+                state.deleteById = {data: {}, status: ApplicationConstants.LOADING, error: null};
             })
             .addCase(deleteById.fulfilled, (state, action) => {
-                state.deleteById.status = ApplicationConstants.SUCCEEDED;
-                state.findAll.data = state.findAll.data.filter(user => user.id !== action.payload);
+                const data = state.findAll.data.filter(user => user.id !== action.payload);
+                state.findAll = {data, status: ApplicationConstants.SUCCEEDED, error: null};
+                state.deleteById = {data: action.payload, status: ApplicationConstants.SUCCEEDED, error: null};
             })
             .addCase(deleteById.rejected, (state, action) => {
-                state.deleteById.status = ApplicationConstants.FAILED;
-                state.deleteById.error = action.error.message;
+                state.deleteById = {data: {}, status: ApplicationConstants.FAILED, error: action.error};
             });
 
         builder
-            .addCase(saveDepartment.pending, state => {
-                state.findAllDepartments.status = ApplicationConstants.LOADING;
+            .addCase(findAllDepartments.pending, state => {
+                state.findAllDepartments = {data: {}, status: ApplicationConstants.LOADING, error: null};
             })
-            .addCase(saveDepartment.fulfilled, (state, action) => {
-                state.findAllDepartments.status = ApplicationConstants.SUCCEEDED;
-                state.findAllDepartments.data.push(action.payload);
+            .addCase(findAllDepartments.fulfilled, (state, action) => {
+                state.findAllDepartments = {data: action.payload, status: ApplicationConstants.SUCCEEDED, error: null};
             })
-            .addCase(saveDepartment.rejected, (state, action) => {
-                state.findAllDepartments.status = ApplicationConstants.FAILED;
-                state.findAllDepartments.error = action.error.message;
+            .addCase(findAllDepartments.rejected, (state, action) => {
+                state.findAllDepartments = {data: {}, status: ApplicationConstants.FAILED, error: action.error};
             });
     }
 });

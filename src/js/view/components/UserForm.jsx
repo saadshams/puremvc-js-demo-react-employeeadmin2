@@ -9,48 +9,77 @@
 import styles from "../../../css/form.module.css"
 import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
-import {User} from "../../model/valueObject/User.js";
-import {Department} from "../../model/valueObject/Department.js";
-import {useFindByIdQuery, useSaveMutation, useUpdateMutation, useFindAllDepartmentsQuery} from "../../model/service/userService.js";
+import {useDispatch, useSelector} from "react-redux";
+import {ApplicationConstants} from "../../ApplicationConstants.js";
+import {getConnection} from "../../model/connections/database.js";
+import {findById, findAllDepartments, create, save, update} from "../../model/data/userData.js";
 
 /**
  * UserForm component
  *
- * @param {Object} props - The component props
- * @param {User} props.user - The user object
- * @returns {JSX.Element} The rendered component
+ * @param {Object} props
+ * @param {User} props.user
+ * @param {function} props.setUser
+ * @returns {JSX.Element}
  */
-export const UserForm = ({user}) => {
+export const UserForm = ({user, setUser}) => {
 
-	const departments = useFindAllDepartmentsQuery(); // Application Data
-	const findById = useFindByIdQuery({id: user.id}, {skip: user.id === 0}); // User Data
-	const [formData, setFormData] = useState({...User.create(), confirm: ""}); // Form Data
+	const NONE_SELECTED = {id: 0, name: "---None Selected---"};
 
-	const [save, saveStatus] = useSaveMutation(); // Actions
-	const [update, updateStatus] = useUpdateMutation();
+	const dispatch = useDispatch(); // event dispatcher
+
+	const findAllDepartmentsSelector = useSelector(state => state.userDataSlice.findAllDepartments); // Selectors
+	const findByIdSelector = useSelector(state => state.userDataSlice.findById);
+	const saveSelector = useSelector(state => state.userDataSlice.save);
+	const updateSelector = useSelector(state => state.userDataSlice.update);
+
+	const [formData, setFormData] = useState({...create(), confirm: ""}); // Form Data
 
 	useEffect(() => {
-		if (user.id !== 0 && findById.data) {
-			setFormData({...findById.data, confirm: findById.data.password});
-		} else {
+		(async () => {
+			if (findAllDepartmentsSelector.status === ApplicationConstants.IDLE) {
+				dispatch(findAllDepartments({database: await getConnection()}));
+			} else if(findAllDepartmentsSelector.status === ApplicationConstants.SUCCEEDED) {
+				if (user.id) {
+					dispatch(findById({database: await getConnection(), id: user.id}));
+				}
+			}
+		})();
+	}, [dispatch, findAllDepartmentsSelector.status, user.id]);
+
+	useEffect(() => {
+		if (findByIdSelector.status === ApplicationConstants.SUCCEEDED) {
+			let data = findByIdSelector.data;
+			setFormData({...data, confirm: data.password});
+		}
+	}, [findByIdSelector.status, findByIdSelector.data]);
+
+	useEffect(() => {
+		if (updateSelector.status === ApplicationConstants.SUCCEEDED || saveSelector.status === ApplicationConstants.SUCCEEDED) {
 			reset();
 		}
-	}, [findById.data, user.id]);
+	}, [updateSelector.status, saveSelector.status]);
 
 	const onChange = (event) => {
 		const {id, value} = event.target;
 		setFormData((state) => ({ // update fields
-			...state, [id]: id === "department" ? departments.data.find(d => d.id === parseInt(value)) : value
+			...state, [id]: id === "department" ? findAllDepartmentsSelector.data.find(d => d.id === parseInt(value)) : value
 		}));
 	}
 
 	const onSave = async () => {
-		user.id === 0 ? await save(formData).unwrap() : await update(formData).unwrap();
-		setFormData({...User.create(), confirm: ""});
+		let params = {database: await getConnection(), user: formData};
+		user.id ? dispatch(update(params)) : dispatch(save(params));
 	}
 
 	const reset = () => {
-		setFormData({...User.create(), confirm: ""});
+		setUser(create());
+		setFormData({...create(), confirm: "", department: NONE_SELECTED});
+	}
+
+	const isValid = user => {
+		return user.username !== "" && user.first !== "" && user.last !== "" && user.email !== "" &&
+			user.password !== "" && user.password === user.confirm && user.department.id !== 0;
 	}
 
 	return (
@@ -88,8 +117,8 @@ export const UserForm = ({user}) => {
 						<li>
 							<label htmlFor="department">Department:</label>
 							<select id="department" value={formData.department.id} onChange={onChange} required>
-								<option value={Department.NONE_SELECTED.id}>{Department.NONE_SELECTED.name}</option>
-								{departments.isSuccess && departments.data.map(department => (
+								<option value={NONE_SELECTED.id}>{NONE_SELECTED.name}</option>
+								{findAllDepartmentsSelector.status === ApplicationConstants.SUCCEEDED && findAllDepartmentsSelector.data.map(department => (
 									<option key={`department_${department.id}`} value={department.id}>{department.name}</option>
 								))}
 							</select>
@@ -98,13 +127,14 @@ export const UserForm = ({user}) => {
 				</main>
 				<footer>
 					<div className={styles.error}>
-						{departments.error && departments.error.message}
-						{findById.isError && findById.error.message}
-						{saveStatus.error && saveStatus.error.message}
-						{updateStatus.error && updateStatus.error.message}
+						{findAllDepartmentsSelector.status === ApplicationConstants.FAILED && findAllDepartmentsSelector.error.message}
+						{findByIdSelector.status === ApplicationConstants.FAILED && findByIdSelector.error.message}
+						{saveSelector.status === ApplicationConstants.FAILED && saveSelector.error.message}
+						{updateSelector.status === ApplicationConstants.FAILED && updateSelector.error.message}
 					</div>
-					<button className="primary" disabled={!User.isValid(formData)} onClick={() => onSave()}>
-						{user.id === 0 ? (saveStatus.isLoading ? "Saving..." : "Save") : (updateStatus.isLoading ? "Updating..." : "Update")}
+					<button className="primary" disabled={!isValid(formData)} onClick={() => onSave()}>
+						{user.id ? (updateSelector.status === ApplicationConstants.LOADING ? "Updating..." : "Update") :
+							(saveSelector.status === ApplicationConstants.LOADING ? "Saving..." : "Save")}
 					</button>
 					<button className="outline-primary" onClick={() => reset()}>Cancel</button>
 				</footer>
@@ -114,5 +144,6 @@ export const UserForm = ({user}) => {
 };
 
 UserForm.propTypes = {
-	user: PropTypes.object.isRequired
+	user: PropTypes.object.isRequired,
+	setUser: PropTypes.func.isRequired,
 };
