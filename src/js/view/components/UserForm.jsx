@@ -8,11 +8,11 @@
 
 import styles from "../../../css/form.module.css"
 import {useEffect, useState} from "react";
-import PropTypes from "prop-types";
 import {useDispatch, useSelector} from "react-redux";
-import {ApplicationConstants} from "../../ApplicationConstants.js";
+import PropTypes from "prop-types";
 import {getConnection} from "../../model/connections/database.js";
-import {findById, findAllDepartments, create, save, update} from "../../model/data/userData.js";
+import {ApplicationConstants} from "../../ApplicationConstants.js";
+import {findById, findAllDepartments, create, save, update, NONE_SELECTED} from "../../model/data/userData.js";
 
 /**
  * UserForm component
@@ -23,8 +23,6 @@ import {findById, findAllDepartments, create, save, update} from "../../model/da
  * @returns {JSX.Element}
  */
 export const UserForm = ({user, setUser}) => {
-
-	const NONE_SELECTED = {id: 0, name: "---None Selected---"};
 
 	const dispatch = useDispatch(); // event dispatcher
 
@@ -42,6 +40,8 @@ export const UserForm = ({user, setUser}) => {
 			} else if(findAllDepartmentsSelector.status === ApplicationConstants.SUCCEEDED) {
 				if (user.id) {
 					dispatch(findById({database: await getConnection(), id: user.id}));
+				} else {
+					reset();
 				}
 			}
 		})();

@@ -8,7 +8,9 @@
 
 import {createAsyncThunk} from "@reduxjs/toolkit";
 
-export const create = (username = "", first = "", last= "", email = "", password= "", department = {}, roles = []) => {
+export const NONE_SELECTED = {id: 0, name: "---None Selected---"};
+
+export const create = (username = "", first = "", last= "", email = "", password= "", department = NONE_SELECTED, roles = []) => {
     return {username, first, last, email, password, department, roles};
 }
 
@@ -60,7 +62,9 @@ export const save = createAsyncThunk("users/save",
 
             const store = transaction.objectStore("users");
             const request = store.add(user);
-            request.onsuccess = () => resolve(user);
+            request.onsuccess = event => {
+                resolve({...user, id: event.target.result});
+            }
             request.onerror = event => reject(event.target.error);
         });
     }

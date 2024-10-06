@@ -10,8 +10,8 @@ import styles from "../../../css/role.module.css"
 import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import PropTypes from "prop-types";
-import {ApplicationConstants} from "../../ApplicationConstants.js";
 import {getConnection} from "../../model/connections/database.js";
+import {ApplicationConstants} from "../../ApplicationConstants.js";
 import {findAll, findById, add, remove} from "../../model/data/roleData.js";
 
 /**
@@ -37,8 +37,7 @@ export const UserRole = ({user}) => {
 			if(findAllSelector.status === ApplicationConstants.IDLE) {
 				dispatch(findAll({database: await getConnection()}));
 			} else if (findAllSelector.status === ApplicationConstants.SUCCEEDED) {
-				if (user.id)
-					dispatch(findById({database: await getConnection(), id: user.id}));
+				dispatch(findById({database: await getConnection(), id: user.id ? user.id : 0}));
 			}
 		})();
 	}, [dispatch, findAllSelector.status, user.id]);
@@ -50,7 +49,7 @@ export const UserRole = ({user}) => {
 				reset();
 			}
 		})();
-	}, [findByIdSelector.status]);
+	}, [addSelector.status, removeSelector.status]);
 
 	const onChange = (event) => {
 		setFormData(findAllSelector.data.find(role => role.id === parseInt(event.target.value)));

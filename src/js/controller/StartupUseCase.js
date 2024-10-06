@@ -62,11 +62,11 @@ export class StartupUseCase {
     ];
 
     users = [
-        {username: "lstooge", first: "Larry", last: "Stooge", email: "larry@stooges.com", password: "ijk456",
+        {id: 1, username: "lstooge", first: "Larry", last: "Stooge", email: "larry@stooges.com", password: "ijk456",
             department: this.departments[0], roles: [this.roles[3], this.roles[5]]},
-        {username: "cstooge", first: "Curly", last: "Stooge", email: "curly@stooges.com", password: "xyz987",
+        {id: 2, username: "cstooge", first: "Curly", last: "Stooge", email: "curly@stooges.com", password: "xyz987",
             department: this.departments[1], roles: [this.roles[1], this.roles[2]]},
-        {username: "mstooge", first: "Moe", last: "Stooge", email: "moe@stooges.com", password: "abc123",
+        {id: 3, username: "mstooge", first: "Moe", last: "Stooge", email: "moe@stooges.com", password: "abc123",
             department: this.departments[2], roles: [this.roles[7], this.roles[9], this.roles[12]]}
     ];
 

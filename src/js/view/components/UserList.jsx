@@ -9,10 +9,10 @@
 import styles from "../../../css/list.module.css"
 import {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {getConnection} from "../../model/connections/database.js";
-import {create, findAll, deleteById} from "../../model/data/userData.js";
 import PropTypes from "prop-types";
+import {getConnection} from "../../model/connections/database.js";
 import {ApplicationConstants} from "../../ApplicationConstants.js";
+import {create, findAll, deleteById} from "../../model/data/userData.js";
 
 /**
  * UserList component
@@ -35,6 +35,12 @@ export const UserList = ({user, setUser}) => {
             }
         })();
     }, [dispatch, findAllSelector]);
+
+    useEffect(() => {
+        if (deleteByIdSelector.status === ApplicationConstants.SUCCEEDED) {
+            setUser(create());
+        }
+    }, [deleteByIdSelector.status]);
 
     const onNew = () => {
         setUser(create());

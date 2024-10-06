@@ -38,7 +38,7 @@ export const findById = createAsyncThunk("roles/findById",
 
             const store = transaction.objectStore("users");
             const request = store.get(id);
-            request.onsuccess = () => resolve(request.result.roles);
+            request.onsuccess = () => resolve(request.result ? request.result.roles : []);
             request.onerror = event => reject(event.target.error);
         });
     }

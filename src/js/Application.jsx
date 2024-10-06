@@ -16,12 +16,13 @@ import {UserForm} from "./view/components/UserForm";
 import {UserRole} from "./view/components/UserRole";
 import {StartupUseCase} from "./controller/StartupUseCase.js";
 import {appStore} from "./appStore.js";
+import {create} from "./model/data/userData.js";
 
 const Application = () => {
 
     new StartupUseCase().execute();
 
-    const [user, setUser] = useState({}); // Shared Data
+    const [user, setUser] = useState(create()); // Shared Data
 
     return (
         <div className="fluid">
