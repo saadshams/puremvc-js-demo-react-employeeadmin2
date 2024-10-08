@@ -1,5 +1,5 @@
 //
-//  userDataSlice.js
+//  userRepository.js
 //  PureMVC JS Demo - React EmployeeAdmin
 //
 //  Copyright(c) 2024 Saad Shams <saad.shams@puremvc.org>
@@ -7,11 +7,11 @@
 //
 
 import {createSlice} from "@reduxjs/toolkit";
-import {ApplicationConstants} from "../../ApplicationConstants.js";
-import {deleteById, findAll, findAllDepartments, findById, save, update} from "./userData.js";
+import {ApplicationConstants} from "../ApplicationConstants.js";
+import {deleteById, findAll, findAllDepartments, findById, save, update} from "./data/userData.js";
 
-const userDataSlice = createSlice({
-    name: "userDataSlice",
+const userRepository = createSlice({
+    name: "userRepository",
     initialState: {
         findAll: { data: [], status: ApplicationConstants.IDLE, error: null },
         findById: { data: {}, status: ApplicationConstants.IDLE, error: null },
@@ -96,4 +96,4 @@ const userDataSlice = createSlice({
     }
 });
 
-export default userDataSlice.reducer;
+export default userRepository.reducer;

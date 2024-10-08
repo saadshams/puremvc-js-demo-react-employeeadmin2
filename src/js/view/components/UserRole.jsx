@@ -8,11 +8,10 @@
 
 import styles from "../../../css/role.module.css"
 import {useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import PropTypes from "prop-types";
-import {getConnection} from "../../model/connections/database.js";
 import {ApplicationConstants} from "../../ApplicationConstants.js";
-import {findAll, findById, add, remove} from "../../model/data/roleData.js";
+import useRoleViewModel from "../useRoleViewModel.js";
 
 /**
  * UserRole component
@@ -26,18 +25,16 @@ export const UserRole = ({user}) => {
 	const NONE_SELECTED = {id: 0, name: "---None Selected---"};
 
 	const dispatch = useDispatch();
-	const findAllSelector = useSelector(state => state.roleDataSlice.findAll); // Application Data
-	const findByIdSelector = useSelector(state => state.roleDataSlice.findById); // User Data
-	const addSelector = useSelector(state => state.roleDataSlice.add); // Action Data
-	const removeSelector = useSelector(state => state.roleDataSlice.remove);
+	const {findAllSelector, findByIdSelector, addSelector, removeSelector,
+		findAll, findById, add, remove} = useRoleViewModel();
 	const [formData, setFormData] = useState(NONE_SELECTED); // Form Data
 
 	useEffect(() => {
 		(async () => {
 			if(findAllSelector.status === ApplicationConstants.IDLE) {
-				dispatch(findAll({database: await getConnection()}));
+				await findAll();
 			} else if (findAllSelector.status === ApplicationConstants.SUCCEEDED) {
-				dispatch(findById({database: await getConnection(), id: user.id ? user.id : 0}));
+				await findById(user.id ? user.id : 0);
 			}
 		})();
 	}, [dispatch, findAllSelector.status, user.id]);
@@ -56,11 +53,11 @@ export const UserRole = ({user}) => {
 	}
 
 	const onAdd = async () => {
-		dispatch(add({database: await getConnection(), id: user.id, role: formData}))
+		await add(user.id, formData);
 	};
 
 	const onRemove = async () => {
-		dispatch(remove({database: await getConnection(), id: user.id, role: formData}))
+		await remove(user.id, formData);
 	};
 
 	const reset = () => {

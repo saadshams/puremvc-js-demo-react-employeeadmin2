@@ -8,11 +8,9 @@
 
 import styles from "../../../css/form.module.css"
 import {useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
 import PropTypes from "prop-types";
-import {getConnection} from "../../model/connections/database.js";
 import {ApplicationConstants} from "../../ApplicationConstants.js";
-import {findById, findAllDepartments, create, save, update, NONE_SELECTED} from "../../model/data/userData.js";
+import useFormViewModel from "../useFormViewModel.js";
 
 /**
  * UserForm component
@@ -24,28 +22,25 @@ import {findById, findAllDepartments, create, save, update, NONE_SELECTED} from 
  */
 export const UserForm = ({user, setUser}) => {
 
-	const dispatch = useDispatch(); // event dispatcher
+	const NONE_SELECTED = {id: 0, name: "---None Selected---"};
 
-	const findAllDepartmentsSelector = useSelector(state => state.userDataSlice.findAllDepartments); // Selectors
-	const findByIdSelector = useSelector(state => state.userDataSlice.findById);
-	const saveSelector = useSelector(state => state.userDataSlice.save);
-	const updateSelector = useSelector(state => state.userDataSlice.update);
-
-	const [formData, setFormData] = useState({...create(), confirm: ""}); // Form Data
+	const {findAllDepartmentsSelector, findByIdSelector, saveSelector, updateSelector,
+		findAllDepartments, findById, save, update} = useFormViewModel();
+	const [formData, setFormData] = useState({...user, confirm: ""}); // Form Data
 
 	useEffect(() => {
 		(async () => {
 			if (findAllDepartmentsSelector.status === ApplicationConstants.IDLE) {
-				dispatch(findAllDepartments({database: await getConnection()}));
+				await findAllDepartments();
 			} else if(findAllDepartmentsSelector.status === ApplicationConstants.SUCCEEDED) {
 				if (user.id) {
-					dispatch(findById({database: await getConnection(), id: user.id}));
+					await findById(user.id);
 				} else {
 					reset();
 				}
 			}
 		})();
-	}, [dispatch, findAllDepartmentsSelector.status, user.id]);
+	}, [findAllDepartmentsSelector.status, user.id]);
 
 	useEffect(() => {
 		if (findByIdSelector.status === ApplicationConstants.SUCCEEDED) {
@@ -60,6 +55,10 @@ export const UserForm = ({user, setUser}) => {
 		}
 	}, [updateSelector.status, saveSelector.status]);
 
+	const create = (username = "", first = "", last= "", email = "", password= "", department = NONE_SELECTED, roles = []) => {
+		return {username, first, last, email, password, department, roles};
+	}
+
 	const onChange = (event) => {
 		const {id, value} = event.target;
 		setFormData((state) => ({ // update fields
@@ -68,8 +67,7 @@ export const UserForm = ({user, setUser}) => {
 	}
 
 	const onSave = async () => {
-		let params = {database: await getConnection(), user: formData};
-		user.id ? dispatch(update(params)) : dispatch(save(params));
+		user.id ? await update(formData) : await save(formData);
 	}
 
 	const reset = () => {

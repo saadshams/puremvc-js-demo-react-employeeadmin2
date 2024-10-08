@@ -8,12 +8,6 @@
 
 import {createAsyncThunk} from "@reduxjs/toolkit";
 
-export const NONE_SELECTED = {id: 0, name: "---None Selected---"};
-
-export const create = (username = "", first = "", last= "", email = "", password= "", department = NONE_SELECTED, roles = []) => {
-    return {username, first, last, email, password, department, roles};
-}
-
 export const findAll = createAsyncThunk("users/findAll",
     /**
      * @param {{database: IDBDatabase}} payload

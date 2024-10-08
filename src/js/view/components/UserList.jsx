@@ -8,11 +8,9 @@
 
 import styles from "../../../css/list.module.css"
 import {useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
 import PropTypes from "prop-types";
-import {getConnection} from "../../model/connections/database.js";
 import {ApplicationConstants} from "../../ApplicationConstants.js";
-import {create, findAll, deleteById} from "../../model/data/userData.js";
+import useListViewModel from "../useListViewModel.js";
 
 /**
  * UserList component
@@ -24,23 +22,27 @@ import {create, findAll, deleteById} from "../../model/data/userData.js";
  */
 export const UserList = ({user, setUser}) => {
 
-    const dispatch = useDispatch();
-    const findAllSelector = useSelector(state => state.userDataSlice.findAll);
-    const deleteByIdSelector = useSelector(state => state.userDataSlice.deleteById);
+    const NONE_SELECTED = {id: 0, name: "---None Selected---"};
+
+    const {findAllSelector, deleteByIdSelector, findAll, deleteById} = useListViewModel();
 
     useEffect(() => {
         (async () => {
             if (findAllSelector.status === ApplicationConstants.IDLE) {
-                dispatch(findAll({database: await getConnection()}));
+                await findAll();
             }
         })();
-    }, [dispatch, findAllSelector]);
+    }, [findAll, findAllSelector]);
 
     useEffect(() => {
         if (deleteByIdSelector.status === ApplicationConstants.SUCCEEDED) {
             setUser(create());
         }
-    }, [deleteByIdSelector.status]);
+    }, [deleteByIdSelector.status, setUser]);
+
+    const create = (username = "", first = "", last= "", email = "", password= "", department = NONE_SELECTED, roles = []) => {
+        return {username, first, last, email, password, department, roles};
+    }
 
     const onNew = () => {
         setUser(create());
@@ -51,8 +53,7 @@ export const UserList = ({user, setUser}) => {
     }
 
     const onDelete = async (user) => {
-        const database = await getConnection();
-        dispatch(deleteById({database, id: user.id}));
+        await deleteById(user.id);
         setUser(create());
     }
 
