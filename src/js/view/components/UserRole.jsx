@@ -20,9 +20,7 @@ import useRoleViewModel from "../useRoleViewModel.js";
  * @param {User} props.user - The user object
  * @returns {JSX.Element} The rendered component
  */
-export const UserRole = ({user}) => {
-
-	const NONE_SELECTED = {id: 0, name: "---None Selected---"};
+export const UserRole = ({user, NONE_SELECTED}) => {
 
 	const dispatch = useDispatch();
 	const {findAllSelector, findByIdSelector, addSelector, removeSelector,
@@ -104,5 +102,6 @@ export const UserRole = ({user}) => {
 };
 
 UserRole.propTypes = {
-	user: PropTypes.object.isRequired
+	user: PropTypes.object.isRequired,
+	NONE_SELECTED: PropTypes.object.isRequired,
 };

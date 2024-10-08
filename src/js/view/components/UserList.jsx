@@ -20,9 +20,7 @@ import useListViewModel from "../useListViewModel.js";
  * @param {function} props.setUser
  * @returns {JSX.Element}
  */
-export const UserList = ({user, setUser}) => {
-
-    const NONE_SELECTED = {id: 0, name: "---None Selected---"};
+export const UserList = ({user, setUser, init}) => {
 
     const {findAllSelector, deleteByIdSelector, findAll, deleteById} = useListViewModel();
 
@@ -36,16 +34,12 @@ export const UserList = ({user, setUser}) => {
 
     useEffect(() => {
         if (deleteByIdSelector.status === ApplicationConstants.SUCCEEDED) {
-            setUser(create());
+            setUser(init());
         }
     }, [deleteByIdSelector.status, setUser]);
 
-    const create = (username = "", first = "", last= "", email = "", password= "", department = NONE_SELECTED, roles = []) => {
-        return {username, first, last, email, password, department, roles};
-    }
-
     const onNew = () => {
-        setUser(create());
+        setUser(init());
     }
 
     const onSelect = (user) => {
@@ -54,7 +48,7 @@ export const UserList = ({user, setUser}) => {
 
     const onDelete = async (user) => {
         await deleteById(user.id);
-        setUser(create());
+        setUser(init());
     }
 
     return (
@@ -110,4 +104,5 @@ export const UserList = ({user, setUser}) => {
 UserList.propTypes = {
     user: PropTypes.object.isRequired,
     setUser: PropTypes.func.isRequired,
+    init: PropTypes.func.isRequired,
 };

@@ -21,14 +21,20 @@ const Application = () => {
 
     new StartupUseCase().execute();
 
-    const [user, setUser] = useState({username: "", first: "", last: "", email: "", password: "", department: {id: 0, name: "---None Selected---"}, roles: []}); // Shared Data
+    const NONE_SELECTED = {id: 0, name: "---None Selected---"};
+
+    const init = (username = "", first = "", last= "", email = "", password= "", department = NONE_SELECTED, roles = []) => {
+        return {username, first, last, email, password, department, roles};
+    }
+
+    const [user, setUser] = useState(init()); // Shared Data
 
     return (
         <div className="fluid">
             <Provider store={appStore}>
-                <UserList user={user} setUser={setUser} />
-                <UserForm user={user} setUser={setUser} />
-                <UserRole user={user} />
+                <UserList user={user} setUser={setUser} init={init} />
+                <UserForm user={user} setUser={setUser} init={init} NONE_SELECTED={NONE_SELECTED} />
+                <UserRole user={user} NONE_SELECTED={NONE_SELECTED} />
             </Provider>
         </div>
     );

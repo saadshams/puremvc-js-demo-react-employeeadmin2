@@ -20,9 +20,7 @@ import useFormViewModel from "../useFormViewModel.js";
  * @param {function} props.setUser
  * @returns {JSX.Element}
  */
-export const UserForm = ({user, setUser}) => {
-
-	const NONE_SELECTED = {id: 0, name: "---None Selected---"};
+export const UserForm = ({user, setUser, init, NONE_SELECTED}) => {
 
 	const {findAllDepartmentsSelector, findByIdSelector, saveSelector, updateSelector,
 		findAllDepartments, findById, save, update} = useFormViewModel();
@@ -55,10 +53,6 @@ export const UserForm = ({user, setUser}) => {
 		}
 	}, [updateSelector.status, saveSelector.status]);
 
-	const create = (username = "", first = "", last= "", email = "", password= "", department = NONE_SELECTED, roles = []) => {
-		return {username, first, last, email, password, department, roles};
-	}
-
 	const onChange = (event) => {
 		const {id, value} = event.target;
 		setFormData((state) => ({ // update fields
@@ -71,8 +65,8 @@ export const UserForm = ({user, setUser}) => {
 	}
 
 	const reset = () => {
-		setUser(create());
-		setFormData({...create(), confirm: "", department: NONE_SELECTED});
+		setUser(init());
+		setFormData({...init(), confirm: "", department: NONE_SELECTED});
 	}
 
 	const isValid = user => {
@@ -144,4 +138,6 @@ export const UserForm = ({user, setUser}) => {
 UserForm.propTypes = {
 	user: PropTypes.object.isRequired,
 	setUser: PropTypes.func.isRequired,
+	init: PropTypes.func.isRequired,
+	NONE_SELECTED: PropTypes.object.isRequired,
 };
