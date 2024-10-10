@@ -22,7 +22,6 @@ import useRoleViewModel from "../useRoleViewModel.js";
  */
 export const UserRole = ({user, NONE_SELECTED}) => {
 
-	const dispatch = useDispatch();
 	const {findAllSelector, findByIdSelector, addSelector, removeSelector,
 		findAll, findById, add, remove} = useRoleViewModel();
 	const [formData, setFormData] = useState(NONE_SELECTED); // Form Data
@@ -35,7 +34,7 @@ export const UserRole = ({user, NONE_SELECTED}) => {
 				await findById(user.id ? user.id : 0);
 			}
 		})();
-	}, [dispatch, findAllSelector.status, user.id]);
+	}, [findAllSelector.status, user.id]);
 
 	useEffect(() => {
 		(async () => {
