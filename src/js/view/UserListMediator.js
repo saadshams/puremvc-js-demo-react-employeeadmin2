@@ -30,10 +30,10 @@ export class UserListMediator extends Mediator {
         Object.keys(this.listeners).forEach(key => window.addEventListener(key, this.listeners[key]));
 
         /** @type {UserProxy} */
-        this.userProxy = this.facade.retrieveProxy(UserProxy.NAME);
-        this.userProxy.findAllUsers()
-            .then(users => this.component.setUsers(users))
-            .catch(error => this.component.setError(error));
+        // this.userProxy = this.facade.retrieveProxy(UserProxy.NAME);
+        // this.userProxy.findAllUsers()
+        //     .then(users => this.component.setUsers(users))
+        //     .catch(error => this.component.setError(error));
     }
 
     onRemove() {
@@ -42,6 +42,7 @@ export class UserListMediator extends Mediator {
 
     listNotificationInterests() {
         return [
+            ApplicationFacade.LIST_USERS,
             ApplicationFacade.USER_SAVED,
             ApplicationFacade.USER_UPDATED,
             ApplicationFacade.CANCEL_SELECTED,
@@ -55,6 +56,9 @@ export class UserListMediator extends Mediator {
      */
     handleNotification(notification) {
         switch(notification.name) {
+            case ApplicationFacade.LIST_USERS:
+                this.component.setUsers(notification.body);
+                break;
             case ApplicationFacade.USER_SAVED:
                 this.component.addUser(notification.body);
                 break;

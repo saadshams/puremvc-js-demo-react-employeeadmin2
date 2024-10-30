@@ -14,6 +14,7 @@ export class ApplicationFacade extends Facade {
     static STARTUP = "startup"
     static REGISTER = "register"
 
+    static LIST_USERS = "listUsers"
     static NEW_USER = "newUser";
     static CANCEL_SELECTED = "cancelSelected"
 

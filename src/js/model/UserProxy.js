@@ -10,6 +10,9 @@ import {Proxy} from "@puremvc/puremvc-js-multicore-framework";
 import {ApplicationConstants} from "../ApplicationConstants";
 import {User} from "./valueObject/User";
 import {Department} from "./valueObject/Department";
+import {firestore} from "./connections/firebase.js";
+import {collection, onSnapshot} from "firebase/firestore";
+import {ApplicationFacade} from "../ApplicationFacade.js";
 
 export class UserProxy extends Proxy {
 
@@ -17,6 +20,20 @@ export class UserProxy extends Proxy {
 
     constructor() {
         super(UserProxy.NAME, null);
+    }
+
+    async onRegister() {
+        onSnapshot(collection(firestore, "users"), (snapshot) => {
+            const data = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            this.sendNotification(ApplicationFacade.LIST_USERS, data);
+        });
+    }
+
+    onRemove() {
+        this.unsubscribe();
     }
 
     async findAllUsers(){

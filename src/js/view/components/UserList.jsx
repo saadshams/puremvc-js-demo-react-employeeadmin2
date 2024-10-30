@@ -110,7 +110,7 @@ export const UserList = () => {
                                         <span>{user.last}</span>
                                         <span>{user.email}</span>
                                         <span>{user.password}</span>
-                                        <span>{user.department.name}</span>
+                                        {/*<span>{user.department.name}</span>*/}
                                     </label>
                                 </li>
                             ))}
