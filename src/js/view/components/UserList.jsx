@@ -7,7 +7,7 @@
 //
 
 import styles from "../../../css/list.module.css"
-import {useEffect, useMemo, useReducer, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {ApplicationConstants} from "../../ApplicationConstants";
 import {UserVO} from "../../model/valueObject/UserVO.js";
 
@@ -22,7 +22,6 @@ export const UserList = () => {
     const [users, setUsers] = useState([]); // UserVO/Service Data
     const [selectedUser, setSelectedUser] = useState(null); // Input/Form Data
     const [error, setError] = useState(null);
-    const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     /**
      * @typedef {Object} UserList
@@ -49,7 +48,6 @@ export const UserList = () => {
         deSelect: () => {
             setSelectedUser(null);
         },
-        forceUpdate: forceUpdate,
         setError: setError
     }), [setUsers, setSelectedUser, setError]);
 
